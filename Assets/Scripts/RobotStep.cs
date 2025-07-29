@@ -49,15 +49,17 @@ public class RobotStep : MonoBehaviour
     // Alarms
     private int alarm1;
     private int alarm2 = 0;
-    private int alarm3 = 0;
-    private int alarm4 = 0;
+    [SerializeField] private int alarm3 = 0;
+    [SerializeField] private int alarm4 = 0;
     private bool startAlarm1 = true;
     private bool startAlarm2 = false;
+    [SerializeField] private float distanceFromPlayer = 0f;
 
     // Combat
     private Material outline;
     [SerializeField] private PlayerStep player;
-    private bool shocked = false;
+    [SerializeField] private bool noHitWall;
+    [SerializeField] private bool shocked = false;
     public UnityEvent<PlayerStep> OnAttack;
     public bool kick = false;
 
@@ -76,6 +78,8 @@ public class RobotStep : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * (player.transform.position - transform.position).normalized.magnitude, Color.red);
+
         if (player.currentTarget == this)
         {
             outline.color = Color.white;
@@ -95,6 +99,9 @@ public class RobotStep : MonoBehaviour
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), false);
 
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+        distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
+        noHitWall = !Physics2D.Raycast(transform.position, (player.transform.position - transform.position).normalized, distanceFromPlayer, jumpableGround);
 
         if (startAlarm1)
         {
@@ -144,7 +151,7 @@ public class RobotStep : MonoBehaviour
         {
             if (shocked && eState != EnemyState.attack)
             {
-                if ((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)))
+                if ((distanceFromPlayer <= 4.5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                     alarm3 = 300;
                 else
                     shocked = false;
@@ -159,7 +166,12 @@ public class RobotStep : MonoBehaviour
         {
             if (eState == EnemyState.alert)
             {
-                if ((Math.Abs(transform.position.x - player.transform.position.x) <= 2f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)))
+                if (distanceFromPlayer >= 4.5f || !noHitWall)
+                {
+                    eState = EnemyState.normal;
+                }
+
+                if ((Vector3.Distance(player.transform.position, transform.position) <= 2.05f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                 {
                     eState = EnemyState.attack;
 
@@ -184,9 +196,9 @@ public class RobotStep : MonoBehaviour
 
                     switch (hitIndex)
                     {
-                        case 0: { alarm4 = 200; } break;
-                        case 1: { alarm4 = 300; } break;
-                        case 2: { alarm4 = 400; } break;
+                        case 0: { alarm4 = 300; } break;
+                        case 1: { alarm4 = 400; } break;
+                        case 2: { alarm4 = 500; } break;
                     }
                 }
             }
@@ -204,7 +216,7 @@ public class RobotStep : MonoBehaviour
                 if (index < clips.Length)
                     audioSrc.PlayOneShot(clips[index]);*/
 
-                if ((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && !shocked && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && Grounded())
+                if ((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && !shocked && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && Grounded() && noHitWall)
                 {
                     eState = EnemyState.shocked;
                     MovementState mstate = MovementState.shocked;
@@ -254,9 +266,9 @@ public class RobotStep : MonoBehaviour
 
                     switch(hitIndex)
                     {
-                        case 0: { alarm4 = 200; } break;
-                        case 1: { alarm4 = 300; } break;
-                        case 2: { alarm4 = 400; } break;
+                        case 0: { alarm4 = 300; } break;
+                        case 1: { alarm4 = 400; } break;
+                        case 2: { alarm4 = 500; } break;
                     }
                 }
             }
@@ -264,7 +276,7 @@ public class RobotStep : MonoBehaviour
 
             case EnemyState.alert:
             {
-                if (Math.Abs(transform.position.x - player.transform.position.x) > 2f)
+                if (Math.Abs(transform.position.x - player.transform.position.x) > 1.9f)
                 {
                     if (transform.position.x < player.transform.position.x)
                     {
@@ -307,9 +319,9 @@ public class RobotStep : MonoBehaviour
 
                     switch (hitIndex)
                     {
-                        case 0: { alarm4 = 200; } break;
-                        case 1: { alarm4 = 300; } break;
-                        case 2: { alarm4 = 400; } break;
+                        case 0: { alarm4 = 300; } break;
+                        case 1: { alarm4 = 400; } break;
+                        case 2: { alarm4 = 500; } break;
                     }
                     eState = EnemyState.alert;
                     kick = false;

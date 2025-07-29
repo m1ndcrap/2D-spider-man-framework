@@ -6582,7 +6582,11 @@ MonoBehaviour:
   sndHit3: {fileID: 8300000, guid: 90195af7a29eedd4faa63118f5eeae2a, type: 3}
   sndLand: {fileID: 8300000, guid: 599bed65ba944a848b15e79fce900697, type: 3}
   sndStep: {fileID: 8300000, guid: ce8cef4a3ad88d647832a4d2f903d89e, type: 3}
+  alarm3: 0
+  alarm4: 0
+  distanceFromPlayer: 0
   player: {fileID: 1328483147}
+  noHitWall: 0
   OnAttack:
     m_PersistentCalls:
       m_Calls: []
@@ -7482,7 +7486,11 @@ MonoBehaviour:
   sndHit3: {fileID: 8300000, guid: 90195af7a29eedd4faa63118f5eeae2a, type: 3}
   sndLand: {fileID: 8300000, guid: 599bed65ba944a848b15e79fce900697, type: 3}
   sndStep: {fileID: 8300000, guid: ce8cef4a3ad88d647832a4d2f903d89e, type: 3}
+  alarm3: 0
+  alarm4: 0
+  distanceFromPlayer: 0
   player: {fileID: 1328483147}
+  noHitWall: 0
   OnAttack:
     m_PersistentCalls:
       m_Calls: []
