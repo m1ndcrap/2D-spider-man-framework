@@ -13,7 +13,7 @@ using static PlayerStep;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.Image;
 
-public class RobotStep : MonoBehaviour
+public class RobotStep1 : MonoBehaviour
 {
     public Rigidbody2D rb;
     [SerializeField] private Animator anim;
@@ -23,7 +23,6 @@ public class RobotStep : MonoBehaviour
     private float dirX = 0f;
 
     [SerializeField] private LayerMask jumpableGround;
-    [SerializeField] private LayerMask playerMask;
     [SerializeField] public float hsp = 1f; // Horizontal speed
     [SerializeField] private int waitTime = 120;
 
@@ -63,8 +62,6 @@ public class RobotStep : MonoBehaviour
     [SerializeField] private bool shocked = false;
     public UnityEvent<PlayerStep> OnAttack;
     public bool kick = false;
-    public bool attacking = false;
-    public bool collidedWithPlayer = false;
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +72,7 @@ public class RobotStep : MonoBehaviour
         dirX = UnityEngine.Random.Range(0, 2) == 0 ? 1 : -1;
         alarm1 = waitTime;
         outline = sprite.material;
-        player.OnHit.AddListener((x) => OnPlayerHit(x));
+        // player.OnHit.AddListener((x) => OnPlayerHit(x));
     }
 
     // Update is called once per frame
@@ -96,13 +93,10 @@ public class RobotStep : MonoBehaviour
             outline.color = Color.black;
         }
 
-        collidedWithPlayer = Physics2D.Raycast(transform.position, transform.right * -dirX, 0.65f, playerMask);
-
-        if (eState == EnemyState.hurt || player.pState == PlayerStep.PlayerState.dashenemy || (player.transform.position.y - transform.position.y > 0.015f && Grounded()))
+        if (eState == EnemyState.hurt || player.pState == PlayerStep.PlayerState.dashenemy || (player.transform.position.y - transform.position.y > 0.15f && Grounded()))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), true);
         else
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), false);
-
 
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
 
@@ -128,7 +122,6 @@ public class RobotStep : MonoBehaviour
                 alarm2 = 240;
             }
         }
-
 
         if (startAlarm2)
         {
@@ -215,15 +208,15 @@ public class RobotStep : MonoBehaviour
         {
             case EnemyState.normal:
             {
-                rb.velocity = new Vector2(dirX * hsp, rb.velocity.y);
+                rb.velocity = new Vector2(dirX * hsp, rb.velocity.y);    // Moving character based on left or right arrow key
 
-                    /*AudioClip[] clips = { sndJump, sndJump2 };
-                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                /*AudioClip[] clips = { sndJump, sndJump2 };
+                int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
 
-                    if (index < clips.Length)
-                        audioSrc.PlayOneShot(clips[index]);*/
+                if (index < clips.Length)
+                    audioSrc.PlayOneShot(clips[index]);*/
 
-                if ((((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x))) || collidedWithPlayer) && !shocked && Grounded() && noHitWall)
+                if ((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && !shocked && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && Grounded() && noHitWall)
                 {
                     eState = EnemyState.shocked;
                     MovementState mstate = MovementState.shocked;
@@ -232,7 +225,6 @@ public class RobotStep : MonoBehaviour
                     anim.speed = 1f;
                     shocked = true;
                     alarm3 = 300;
-                    collidedWithPlayer = false;
                 }
 
                 if (!wasGrounded && Grounded() && eState == EnemyState.normal) // Landing Sound Code
@@ -252,14 +244,14 @@ public class RobotStep : MonoBehaviour
                     if (Grounded())
                     {
                         anim.speed = 1f;
-                        eState = EnemyState.alert;
+                        eState = EnemyState.normal;
                     }
                 }
                 else
                 {
                     anim.speed = 1f;
                     if ((stateInfo.IsName("Enemy_Hit1") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Hit2") && stateInfo.normalizedTime >= 1f))
-                            eState = EnemyState.alert;
+                            eState = EnemyState.normal;
                 }
             }
             break;
@@ -315,15 +307,13 @@ public class RobotStep : MonoBehaviour
             {
                 rb.velocity = new Vector2(0f, 0f);
 
-                if (Math.Abs(player.transform.position.x - transform.position.x) >= 0.45f && ((stateInfo.IsName("Enemy_Kick") && stateInfo.normalizedTime <= 0.31f) || (stateInfo.IsName("Enemy_Punch1") && stateInfo.normalizedTime <= 0.45f) || (stateInfo.IsName("Enemy_Punch2") && stateInfo.normalizedTime <= 0.29f)))
+                if ((Math.Abs(player.transform.position.x - transform.position.x) >= 0.45f))
                 {
                     float step = 4f * Time.deltaTime;
-                    Vector2 targetPosition = new Vector2(player.transform.position.x, transform.position.y);
-                    transform.position = Vector2.MoveTowards(transform.position, targetPosition, step);
-
+                    transform.position = Vector2.MoveTowards(transform.position, player.transform.position, step);
                 }
 
-                if ((stateInfo.IsName("Enemy_Punch1") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Punch2") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Kick") && stateInfo.normalizedTime >= 1f))
+                if (stateInfo.normalizedTime >= 1f)
                 {
                     int hitIndex = UnityEngine.Random.Range(0, 3);
 
@@ -333,7 +323,6 @@ public class RobotStep : MonoBehaviour
                         case 1: { alarm4 = 400; } break;
                         case 2: { alarm4 = 500; } break;
                     }
-
                     eState = EnemyState.alert;
                     kick = false;
                     rb.gravityScale = 1;
@@ -419,12 +408,16 @@ public class RobotStep : MonoBehaviour
 
     public bool Grounded()
     {
-
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, 0.1f, jumpableGround);
     }
 
+    private void OnDrawGizmosSelected()
+    {
+
+    }
+
     //Listened event from Player Animation
-    void OnPlayerHit(RobotStep target)
+    void OnPlayerHit(RobotStep1 target)
     {
         if (target == this)
         {
@@ -490,7 +483,6 @@ public class RobotStep : MonoBehaviour
 
     public void AttackEvent()
     {
-        if (Vector3.Distance(player.transform.position, transform.position) <= 0.45f)
-            player.Damage(this);
+        //player.Damage(this);
     }
 }

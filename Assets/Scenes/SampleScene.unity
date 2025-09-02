@@ -6568,6 +6568,9 @@ MonoBehaviour:
   jumpableGround:
     serializedVersion: 2
     m_Bits: 64
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 512
   hsp: 1
   waitTime: 480
   eState: 0
@@ -6587,10 +6590,13 @@ MonoBehaviour:
   distanceFromPlayer: 0
   player: {fileID: 1328483147}
   noHitWall: 0
+  shocked: 0
   OnAttack:
     m_PersistentCalls:
       m_Calls: []
   kick: 0
+  attacking: 0
+  collidedWithPlayer: 0
 --- !u!61 &688231282
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7166,6 +7172,8 @@ MonoBehaviour:
   hitParticlePrefab: {fileID: 2226498899508459401, guid: a3eecbf454684a348ab972633054eacc, type: 3}
   hurtParticlePrefab: {fileID: 2226498899508459401, guid: d70becd1c8d40374f96f202685c035fa, type: 3}
   uppercut: 0
+  enemyHitSpawn: {x: 0, y: 0, z: 0}
+  attacking: 0
 --- !u!61 &1328483148
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7472,6 +7480,9 @@ MonoBehaviour:
   jumpableGround:
     serializedVersion: 2
     m_Bits: 64
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 512
   hsp: 1
   waitTime: 480
   eState: 0
@@ -7491,10 +7502,13 @@ MonoBehaviour:
   distanceFromPlayer: 0
   player: {fileID: 1328483147}
   noHitWall: 0
+  shocked: 0
   OnAttack:
     m_PersistentCalls:
       m_Calls: []
   kick: 0
+  attacking: 0
+  collidedWithPlayer: 0
 --- !u!61 &2002356294
 BoxCollider2D:
   m_ObjectHideFlags: 0
