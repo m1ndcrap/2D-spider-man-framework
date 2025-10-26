@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d1791c1e513e9a64788f5fd6f5cc85b2
+guid: 2970e4f4e3dd91244b9ee72f1e77ffc5
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -45,7 +45,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 64
@@ -97,85 +97,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spr_web_0
+      name: spr_spider_sense_strip4_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 72
+        height: 43
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6976744}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e7ca8559ec26cc4892888605d40f430
-      internalID: -204083466
+      spriteID: 1d8b40a9995567d48bdcc49d9eda502c
+      internalID: -1246739595
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spr_web_1
+      name: spr_spider_sense_strip4_1
       rect:
         serializedVersion: 2
-        x: 12
+        x: 72
         y: 0
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 72
+        height: 43
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6976744}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8815bf248e03bc94ebe0b13ae13759ea
-      internalID: -100258632
+      spriteID: 0d95d12708c2005489d4de4d0e392ffd
+      internalID: 483172936
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spr_web_2
+      name: spr_spider_sense_strip4_2
       rect:
         serializedVersion: 2
-        x: 24
+        x: 144
         y: 0
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 72
+        height: 43
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6976744}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a398500d3331b054ba5eefe2e2cf591c
-      internalID: -933491328
+      spriteID: 3d092c0540fbb4545b6b10e3a4d4b32f
+      internalID: -298539664
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: spr_web_3
+      name: spr_spider_sense_strip4_3
       rect:
         serializedVersion: 2
-        x: 36
+        x: 216
         y: 0
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 72
+        height: 43
+      alignment: 9
+      pivot: {x: 0.5, y: 0.6976744}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5c8f43d36e040994bb077557ab1b6a90
-      internalID: 991864250
+      spriteID: feea325aea0f4fd4e8203ef48fccfe03
+      internalID: -2128587773
       vertices: []
       indices: 
       edges: []
@@ -191,10 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      spr_web_0: -204083466
-      spr_web_1: -100258632
-      spr_web_2: -933491328
-      spr_web_3: 991864250
+      spr_spider_sense_strip4_0: -1246739595
+      spr_spider_sense_strip4_1: 483172936
+      spr_spider_sense_strip4_2: -298539664
+      spr_spider_sense_strip4_3: -2128587773
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

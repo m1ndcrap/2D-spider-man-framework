@@ -152,7 +152,7 @@ public class RobotStep : MonoBehaviour
         }
 
         if (alarm4 > 0)
-            alarm4 -= 1;
+            alarm4 -= 4;
         else
         {
             if (eState == EnemyState.alert)
@@ -426,7 +426,6 @@ public class RobotStep : MonoBehaviour
     public void OnPlayerHit(RobotStep target)
     {
         player.isEnemyAttacking = false;
-        if (player.countering) { Debug.Log("Countered!"); }
 
         if (target == this)
         {
@@ -482,6 +481,7 @@ public class RobotStep : MonoBehaviour
 
     public void AttackEvent()
     {
+        Debug.Log(Vector3.Distance(player.transform.position, transform.position));
         if (Vector3.Distance(player.transform.position, transform.position) <= 0.45f) { player.Damage(this); }
     }
 }

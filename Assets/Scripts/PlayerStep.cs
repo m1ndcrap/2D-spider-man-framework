@@ -97,17 +97,18 @@ public class PlayerStep : MonoBehaviour
     // combat
     public RobotStep currentTarget = null;
     public RobotStep currentCounter = null;
-    [SerializeField] public bool isEnemyAttacking = false;
+    public bool isEnemyAttacking = false;
     [SerializeField] private LayerMask enemyMask;
     private float dash_spd = 0f;
     public UnityEvent<RobotStep> OnHit;
-    [SerializeField] private bool waitingToHit = false;
+    private bool waitingToHit = false;
     [SerializeField] private GameObject hitParticlePrefab; // Assign prefab in inspector
     [SerializeField] private GameObject hurtParticlePrefab; // Assign prefab in inspector
     public bool uppercut = false;
     public Vector3 enemyHitSpawn = new Vector3(0f, 0f, 0f);
     public bool attacking = false; // boolean for if player is actually going to attack or only needs to play attack anim with no consequence
-    [SerializeField] public bool countering = false;
+    public bool countering = false;
+    [SerializeField] private bool pastHitEvent = false;
 
     // Start is called before the first frame update
     void Start()
@@ -957,12 +958,229 @@ public class PlayerStep : MonoBehaviour
 
                     if (stateInfo.normalizedTime >= 1f)
                     {
+                        pastHitEvent = false;
                         pState = PlayerState.normal;
                         attacking = false;
                         uppercut = false;
                         currentTarget.rb.gravityScale = 1;
                         currentTarget.hsp = 1f;
                         rb.gravityScale = 1;
+                    }
+
+                    if (pastHitEvent)
+                    {
+                        // combat
+                        bool facingLeft = sprite.flipX;
+                        Vector2 origin = transform.position;
+
+                        // Get all enemies in a radius
+                        Collider2D[] ehits = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+                        Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+
+                        float closestEDistance = Mathf.Infinity;
+                        float closestEDistanceC = Mathf.Infinity;
+                        RobotStep closestEnemy = null;
+                        RobotStep closestCounter = null;
+
+                        foreach (var ehit in ehits)
+                        {
+                            RobotStep enemy = ehit.GetComponent<RobotStep>();
+                            if (enemy == null || enemy.eState == RobotStep.EnemyState.death)
+                                continue;
+
+                            // Linecast to check if anything blocks the path
+                            RaycastHit2D hit = Physics2D.Linecast(transform.position, enemy.transform.position, jumpableGround);
+
+                            if (hit.collider != null)
+                                if ((Vector2)hit.point != (Vector2)enemy.transform.position) continue;
+
+                            float dx = enemy.transform.position.x - origin.x;
+
+                            // Check if in front based on flipX
+                            if ((facingLeft && dx > 0) || (!facingLeft && dx < 0))
+                                continue;
+
+                            float dist = Mathf.Abs(dx);
+                            if (dist < closestEDistance)
+                            {
+                                closestEDistance = dist;
+                                closestEnemy = enemy;
+                            }
+                        }
+
+                        foreach (var ehitC in ehitsC)
+                        {
+                            RobotStep enemyC = ehitC.GetComponent<RobotStep>();
+                            if (enemyC == null || enemyC.eState == RobotStep.EnemyState.death)
+                                continue;
+
+                            if (enemyC.eState != RobotStep.EnemyState.attack)
+                                continue;
+
+                            // Linecast to check if anything blocks the path
+                            RaycastHit2D hitC = Physics2D.Linecast(transform.position, enemyC.transform.position, jumpableGround);
+
+                            if (hitC.collider != null)
+                                if ((Vector2)hitC.point != (Vector2)enemyC.transform.position) continue;
+
+                            float dxC = enemyC.transform.position.x - origin.x;
+
+                            float distC = Mathf.Abs(dxC);
+                            if (distC < closestEDistanceC)
+                            {
+                                closestEDistanceC = distC;
+                                closestCounter = enemyC;
+                            }
+                        }
+
+                        currentTarget = closestEnemy;
+                        currentCounter = closestCounter;
+
+                        if (Input.GetKey(KeyCode.O) && currentTarget != null)   // normal attack
+                        {
+                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 5f) { dash_spd = 16f; }
+                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 3.75f) { dash_spd = 12; }
+                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 2.5f) { dash_spd = 8f; }
+                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 1.25f) { dash_spd = 4f; }
+                            attacking = true;
+                            pState = PlayerState.dashenemy;
+                            anim.speed = 2f;
+                            MovementState mstate = MovementState.idle;
+
+                            if (Grounded())
+                            {
+                                int hitIndex = UnityEngine.Random.Range(0, 7); // random number 0-6
+
+                                switch (hitIndex)
+                                {
+                                    case 0: { mstate = MovementState.punch1; } break;
+                                    case 1: { mstate = MovementState.punch2; } break;
+                                    case 2: { mstate = MovementState.punch3; } break;
+                                    case 3: { mstate = MovementState.punch4; } break;
+                                    case 4: { mstate = MovementState.kick1; } break;
+                                    case 5: { mstate = MovementState.kick2; } break;
+                                    case 6: { mstate = MovementState.airpunch; } break;
+                                }
+                            }
+                            else
+                            {
+                                mstate = MovementState.airkick;
+                            }
+
+                            anim.SetInteger("mstate", (int)mstate);
+                            rb.gravityScale = 0;
+                            pastHitEvent = false;
+                        }
+                        else if (Input.GetKey(KeyCode.O) && currentTarget == null)
+                        {
+                            dash_spd = 0f;
+                            attacking = false;
+                            pState = PlayerState.dashenemy;
+                            anim.speed = 1.5f;
+                            MovementState mstate = MovementState.idle;
+
+                            if (Grounded())
+                            {
+                                int hitIndex = UnityEngine.Random.Range(0, 7); // random number 0-6
+
+                                switch (hitIndex)
+                                {
+                                    case 0: { mstate = MovementState.punch1; } break;
+                                    case 1: { mstate = MovementState.punch2; } break;
+                                    case 2: { mstate = MovementState.punch3; } break;
+                                    case 3: { mstate = MovementState.punch4; } break;
+                                    case 4: { mstate = MovementState.kick1; } break;
+                                    case 5: { mstate = MovementState.kick2; } break;
+                                    case 6: { mstate = MovementState.airpunch; } break;
+                                }
+                            }
+                            else
+                            {
+                                mstate = MovementState.airkick;
+                            }
+
+                            anim.SetInteger("mstate", (int)mstate);
+                            pastHitEvent = false;
+                        }
+
+                        if (Input.GetKey(KeyCode.L) && currentTarget != null && Mathf.Abs(currentTarget.transform.position.x - origin.x) <= 1f && Grounded())   // uppercut
+                        {
+                            dash_spd = 4f;
+                            pState = PlayerState.dashenemy;
+                            anim.speed = 2f;
+                            MovementState mstate = MovementState.uppercut;
+                            anim.SetInteger("mstate", (int)mstate);
+                            attacking = true;
+                            uppercut = true;
+                            rb.gravityScale = 0;
+                            pastHitEvent = false;
+                        }
+                        else if (Input.GetKey(KeyCode.L) && (currentTarget == null || (currentTarget != null && Mathf.Abs(currentTarget.transform.position.x - origin.x) > 1f)) && Grounded())
+                        {
+                            dash_spd = 0f;
+                            pState = PlayerState.dashenemy;
+                            anim.speed = 2f;
+                            MovementState mstate = MovementState.uppercut;
+                            anim.SetInteger("mstate", (int)mstate);
+                            attacking = false;
+                            uppercut = false;
+                            pastHitEvent = false;
+                        }
+
+                        if (Input.GetKey(KeyCode.P) && Grounded() && currentCounter != null)   // countering
+                        {
+                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 5f) { dash_spd = 24f; }
+                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 3.75f) { dash_spd = 18f; }
+                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 2.5f) { dash_spd = 12f; }
+                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 1.25f) { dash_spd = 6f; }
+
+                            countering = true;
+                            currentCounter.anim.speed = 0f;
+                            pState = PlayerState.dashenemy;
+
+                            if (currentCounter.transform.position.x < transform.position.x)
+                                sprite.flipX = true;
+                            else if (currentCounter.transform.position.x > transform.position.x)
+                                sprite.flipX = false;
+
+                            anim.speed = 2f;
+                            MovementState mstate = MovementState.idle;
+
+                            int hitIndex = UnityEngine.Random.Range(0, 4);
+
+                            switch (hitIndex)
+                            {
+                                case 0: { mstate = MovementState.block1; } break;
+                                case 1: { mstate = MovementState.block2; } break;
+                                case 2: { mstate = MovementState.block3; } break;
+                                case 3: { mstate = MovementState.block4; } break;
+                            }
+
+                            anim.SetInteger("mstate", (int)mstate);
+                            rb.gravityScale = 0;
+                            pastHitEvent = false;
+                        }
+                        else if (Input.GetKey(KeyCode.P) && Grounded() && currentCounter == null)
+                        {
+                            dash_spd = 0f;
+                            countering = false;
+                            pState = PlayerState.dashenemy;
+                            anim.speed = 1.5f;
+                            MovementState mstate = MovementState.idle;
+
+                            int hitIndex = UnityEngine.Random.Range(0, 4);
+
+                            switch (hitIndex)
+                            {
+                                case 0: { mstate = MovementState.block1; } break;
+                                case 1: { mstate = MovementState.block2; } break;
+                                case 2: { mstate = MovementState.block3; } break;
+                                case 3: { mstate = MovementState.block4; } break;
+                            }
+
+                            anim.SetInteger("mstate", (int)mstate);
+                            pastHitEvent = false;
+                        }
                     }
                 }
                 else if (countering)
@@ -1006,6 +1224,7 @@ public class PlayerStep : MonoBehaviour
 
                     if (stateInfo.normalizedTime >= 1f)
                     {
+                        pastHitEvent = false;
                         pState = PlayerState.normal;
                         countering = false;
                         uppercut = false;
@@ -1020,6 +1239,7 @@ public class PlayerStep : MonoBehaviour
 
                     if (stateInfo.normalizedTime >= 1f)
                     {
+                        pastHitEvent = false;
                         pState = PlayerState.normal;
                         countering = false;
                         anim.speed = 1;
@@ -1327,7 +1547,7 @@ public class PlayerStep : MonoBehaviour
 
     public void HitEvent()
     {
-        if (attacking && ((Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentTarget); }
+        if (attacking && ((Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentTarget); if (!pastHitEvent) { pastHitEvent = true; } }
         if (countering && ((Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentCounter); }
     }
 
