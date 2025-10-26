@@ -7163,17 +7163,20 @@ MonoBehaviour:
   sndCrawlStep: {fileID: 8300000, guid: b0744b72c261cc242accac5fdc61f4d6, type: 3}
   sndCrawlStep2: {fileID: 8300000, guid: 4ebfbf77931d3614abb9e1f02b2a1375, type: 3}
   currentTarget: {fileID: 0}
+  currentCounter: {fileID: 0}
   enemyMask:
     serializedVersion: 2
     m_Bits: 256
   OnHit:
     m_PersistentCalls:
       m_Calls: []
+  waitingToHit: 0
   hitParticlePrefab: {fileID: 2226498899508459401, guid: a3eecbf454684a348ab972633054eacc, type: 3}
   hurtParticlePrefab: {fileID: 2226498899508459401, guid: d70becd1c8d40374f96f202685c035fa, type: 3}
   uppercut: 0
   enemyHitSpawn: {x: 0, y: 0, z: 0}
   attacking: 0
+  countering: 0
 --- !u!61 &1328483148
 BoxCollider2D:
   m_ObjectHideFlags: 0

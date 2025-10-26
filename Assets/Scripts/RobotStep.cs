@@ -16,7 +16,7 @@ using static UnityEngine.UI.Image;
 public class RobotStep : MonoBehaviour
 {
     public Rigidbody2D rb;
-    [SerializeField] private Animator anim;
+    [SerializeField] public Animator anim;
     [SerializeField] public SpriteRenderer sprite;
     private BoxCollider2D coll;
     private float lastspd = 0f;
@@ -27,7 +27,7 @@ public class RobotStep : MonoBehaviour
     [SerializeField] public float hsp = 1f; // Horizontal speed
     [SerializeField] private int waitTime = 120;
 
-    private enum MovementState { idle, running, falling, hurt1, hurt2, launched, shocked, sprinting, alertidle, punch1, punch2, kick }
+    private enum MovementState { idle, running, falling, hurt1, hurt2, launched, shocked, sprinting, alertidle, punch1, punch2, kick, backstep }
     public enum EnemyState { normal, death, hurt, shocked, alert, attack }
     public EnemyState eState;
 
@@ -51,7 +51,7 @@ public class RobotStep : MonoBehaviour
     private int alarm1;
     private int alarm2 = 0;
     [SerializeField] private int alarm3 = 0;
-    [SerializeField] private int alarm4 = 0;
+    [SerializeField] public int alarm4 = 0;
     private bool startAlarm1 = true;
     private bool startAlarm2 = false;
     [SerializeField] private float distanceFromPlayer = 0f;
@@ -65,6 +65,7 @@ public class RobotStep : MonoBehaviour
     public bool kick = false;
     public bool attacking = false;
     public bool collidedWithPlayer = false;
+    private bool backstep = false;
 
     // Start is called before the first frame update
     void Start()
@@ -81,20 +82,13 @@ public class RobotStep : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(anim.speed);
         Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * (player.transform.position - transform.position).normalized.magnitude, Color.red);
 
-        if (player.currentTarget == this)
-        {
-            outline.color = Color.white;
-        }
-        else if (eState == EnemyState.attack)
-        {
-            outline.color = Color.red;
-        }
-        else
-        {
-            outline.color = Color.black;
-        }
+        // Outline Shader Color Control
+        if (eState == EnemyState.attack) { outline.color = Color.red; }
+        else if (player.currentTarget == this) { outline.color = Color.white; }
+        else { outline.color = Color.black; }
 
         collidedWithPlayer = Physics2D.Raycast(transform.position, transform.right * -dirX, 0.65f, playerMask);
 
@@ -103,18 +97,14 @@ public class RobotStep : MonoBehaviour
         else
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), false);
 
-
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-
         distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
         noHitWall = !Physics2D.Raycast(transform.position, (player.transform.position - transform.position).normalized, distanceFromPlayer, jumpableGround);
 
         if (startAlarm1)
         {
             if (alarm1 > 0)
-            {
                 alarm1 -= 1;
-            }
             else
             {
                 if (eState == EnemyState.normal)
@@ -133,9 +123,7 @@ public class RobotStep : MonoBehaviour
         if (startAlarm2)
         {
             if (alarm2 > 0)
-            {
                 alarm2 -= 1;
-            }
             else
             {
                 if (eState == EnemyState.normal)
@@ -151,9 +139,7 @@ public class RobotStep : MonoBehaviour
         }
 
         if (alarm3 > 0)
-        {
             alarm3 -= 1;
-        }
         else
         {
             if (shocked && eState != EnemyState.attack)
@@ -166,9 +152,7 @@ public class RobotStep : MonoBehaviour
         }
 
         if (alarm4 > 0)
-        {
             alarm4 -= 1;
-        }
         else
         {
             if (eState == EnemyState.alert)
@@ -178,24 +162,22 @@ public class RobotStep : MonoBehaviour
                     eState = EnemyState.normal;
                 }
 
-                if ((Vector3.Distance(player.transform.position, transform.position) <= 2.05f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
+                if ((!player.isEnemyAttacking) && (Vector3.Distance(player.transform.position, transform.position) <= 2.05f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                 {
                     eState = EnemyState.attack;
-
                     rb.gravityScale = 0;
-
                     int hitIndex = UnityEngine.Random.Range(0, 3); // random number 0-6
-
                     MovementState mstate = MovementState.idle;
 
                     switch (hitIndex)
                     {
-                        case 0: { mstate = MovementState.punch1; } break;
-                        case 1: { mstate = MovementState.punch2; } break;
-                        case 2: { mstate = MovementState.kick; kick = true; } break;
+                        case 0: { mstate = MovementState.punch1; anim.speed = 0.6f; } break;
+                        case 1: { mstate = MovementState.punch2; anim.speed = 0.6f; } break;
+                        case 2: { mstate = MovementState.kick; kick = true; anim.speed = 1f; } break;
                     }
 
                     anim.SetInteger("mstate", (int)mstate);
+                    player.isEnemyAttacking = true;
                 }
                 else
                 {
@@ -217,11 +199,11 @@ public class RobotStep : MonoBehaviour
             {
                 rb.velocity = new Vector2(dirX * hsp, rb.velocity.y);
 
-                    /*AudioClip[] clips = { sndJump, sndJump2 };
-                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                /*AudioClip[] clips = { sndJump, sndJump2 };
+                int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
 
-                    if (index < clips.Length)
-                        audioSrc.PlayOneShot(clips[index]);*/
+                if (index < clips.Length)
+                    audioSrc.PlayOneShot(clips[index]);*/
 
                 if ((((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x))) || collidedWithPlayer) && !shocked && Grounded() && noHitWall)
                 {
@@ -246,8 +228,7 @@ public class RobotStep : MonoBehaviour
             {
                 if ((stateInfo.IsName("Enemy_Launched")))
                 {
-                    if (stateInfo.normalizedTime >= 1f)
-                        anim.speed = 0f;
+                    if (stateInfo.normalizedTime >= 1f) {anim.speed = 0f;}
                     
                     if (Grounded())
                     {
@@ -258,8 +239,7 @@ public class RobotStep : MonoBehaviour
                 else
                 {
                     anim.speed = 1f;
-                    if ((stateInfo.IsName("Enemy_Hit1") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Hit2") && stateInfo.normalizedTime >= 1f))
-                            eState = EnemyState.alert;
+                    if ((stateInfo.IsName("Enemy_Hit1") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Hit2") && stateInfo.normalizedTime >= 1f)) { eState = EnemyState.alert; }
                 }
             }
             break;
@@ -269,7 +249,6 @@ public class RobotStep : MonoBehaviour
                 if (stateInfo.IsName("Enemy_Shocked") && stateInfo.normalizedTime >= 1f)
                 {
                     eState = EnemyState.alert;
-
                     int hitIndex = UnityEngine.Random.Range(0, 3);
 
                     switch(hitIndex)
@@ -286,6 +265,8 @@ public class RobotStep : MonoBehaviour
             {
                 if (Math.Abs(transform.position.x - player.transform.position.x) > 1.9f)
                 {
+                    backstep = false;
+
                     if (transform.position.x < player.transform.position.x)
                     {
                         dirX = 1f;
@@ -297,8 +278,24 @@ public class RobotStep : MonoBehaviour
                         sprite.flipX = true;
                     }
                 }
+                else if (Math.Abs(transform.position.x - player.transform.position.x) < 1.7f)
+                {
+                    backstep = true;
+
+                    if (transform.position.x < player.transform.position.x)
+                    {
+                        dirX = -0.6f;
+                        sprite.flipX = false;
+                    }
+                    else
+                    {
+                        dirX = 0.6f;
+                        sprite.flipX = true;
+                    }
+                }
                 else
                 {
+                    backstep = false;
                     dirX = 0f;
                 }
 
@@ -335,6 +332,8 @@ public class RobotStep : MonoBehaviour
                     }
 
                     eState = EnemyState.alert;
+                    player.isEnemyAttacking = false;
+                    anim.speed = 1f;
                     kick = false;
                     rb.gravityScale = 1;
                 }
@@ -347,41 +346,42 @@ public class RobotStep : MonoBehaviour
 
     private void UpdateAnimationState()
     {
-        if (dirX > 0f)
-            sprite.flipX = false;
-        else if (dirX < 0f)
-            sprite.flipX = true;
+        if (!(eState == EnemyState.alert && backstep))
+        {
+            if (dirX > 0f)
+                sprite.flipX = false;
+            else if (dirX < 0f)
+                sprite.flipX = true;
+        }
 
         if (eState == EnemyState.hurt) return;
         if (eState == EnemyState.shocked) return;
         if (eState == EnemyState.attack) return;
-
         MovementState mstate = MovementState.idle;
 
+        // Controlling running animation by controlling boolean variable responsible for triggering running animation based on horizontal speed
         if (eState == EnemyState.normal)
         {
-            if (dirX > 0f)                  // Controlling running animation by controlling boolean variable responsible for triggering running animation based on horizontal speed
+            if (dirX > 0f)
                 mstate = MovementState.running;
             else if (dirX < 0f)
                 mstate = MovementState.running;
             else
                 mstate = MovementState.idle;
 
-            if (rb.velocity.y < -0.1f)
-                mstate = MovementState.falling;
+            if (rb.velocity.y < -0.1f) { mstate = MovementState.falling; }
         }
 
         if (eState == EnemyState.alert)
         {
-            if (dirX > 0f)                  // Controlling running animation by controlling boolean variable responsible for triggering running animation based on horizontal speed
-                mstate = MovementState.sprinting;
+            if (dirX > 0f)
+                if (backstep) mstate = MovementState.backstep; else mstate = MovementState.sprinting;
             else if (dirX < 0f)
-                mstate = MovementState.sprinting;
+                if (backstep) mstate = MovementState.backstep; else mstate = MovementState.sprinting;
             else
                 mstate = MovementState.alertidle;
 
-            if (rb.velocity.y < -0.1f)
-                mstate = MovementState.falling;
+            if (rb.velocity.y < -0.1f) { mstate = MovementState.falling; }
         }
 
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
@@ -419,22 +419,17 @@ public class RobotStep : MonoBehaviour
 
     public bool Grounded()
     {
-
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, 0.1f, jumpableGround);
     }
 
     //Listened event from Player Animation
-    void OnPlayerHit(RobotStep target)
+    public void OnPlayerHit(RobotStep target)
     {
+        player.isEnemyAttacking = false;
+        if (player.countering) { Debug.Log("Countered!"); }
+
         if (target == this)
         {
-            Debug.Log("Hit!");
-            //StopEnemyCoroutines();
-            //DamageCoroutine = StartCoroutine(HitCoroutine());
-
-            // player.currentTarget = null;
-            // isLockedTarget = false;
-            //OnDamage.Invoke(this);
             float dir = 0;
 
             if (!player.sprite.flipX)
@@ -455,12 +450,20 @@ public class RobotStep : MonoBehaviour
 
             anim.speed = 1f;
             eState = EnemyState.hurt;
+
+            int attackTime = UnityEngine.Random.Range(0, 3);
+
+            switch (attackTime)
+            {
+                case 0: { alarm4 = 300; } break;
+                case 1: { alarm4 = 400; } break;
+                case 2: { alarm4 = 500; } break;
+            }
+
             MovementState mstate;
 
             if (player.uppercut)
-            {
                 mstate = MovementState.launched;
-            }
             else
             {
                 int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
@@ -472,25 +475,13 @@ public class RobotStep : MonoBehaviour
             }
 
             anim.SetInteger("mstate", (int)mstate);
-
             Vector2 hitPoint = transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
             player.SpawnHitEffect(hitPoint);
-            //transform.DOMove(transform.position - (transform.forward / 2), .3f).SetDelay(.1f);
-
-            //StopMoving();
         }
-        /*
-        IEnumerator HitCoroutine()
-        {
-            isStunned = true;
-            yield return new WaitForSeconds(.5f);
-            isStunned = false;
-        }*/
     }
 
     public void AttackEvent()
     {
-        if (Vector3.Distance(player.transform.position, transform.position) <= 0.45f)
-            player.Damage(this);
+        if (Vector3.Distance(player.transform.position, transform.position) <= 0.45f) { player.Damage(this); }
     }
 }
