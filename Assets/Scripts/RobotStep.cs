@@ -43,6 +43,10 @@ public class RobotStep : MonoBehaviour
     [SerializeField] private AudioClip sndHit3;
     [SerializeField] private AudioClip sndLand;
     [SerializeField] private AudioClip sndStep;
+    private AudioClip sndQuickHit;
+    private AudioClip sndQuickHit2;
+    private AudioClip sndStrongHit;
+    private AudioClip sndStrongHit2;
     private bool wasGrounded = false;
     private bool hasPlayedStep1;
     private bool hasPlayedStep2;
@@ -77,6 +81,10 @@ public class RobotStep : MonoBehaviour
         alarm1 = waitTime;
         outline = sprite.material;
         player.OnHit.AddListener((x) => OnPlayerHit(x));
+        sndQuickHit = player.sndQuickHit;
+        sndQuickHit2 = player.sndQuickHit2;
+        sndStrongHit = player.sndStrongHit;
+        sndStrongHit2 = player.sndStrongHit2;
     }
 
     // Update is called once per frame
@@ -165,6 +173,9 @@ public class RobotStep : MonoBehaviour
                 if ((!player.isEnemyAttacking) && (Vector3.Distance(player.transform.position, transform.position) <= 2.05f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                 {
                     eState = EnemyState.attack;
+                    AudioClip[] clips = { sndAttack, sndAttack2 };
+                    int index = UnityEngine.Random.Range(0, clips.Length);
+                    if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
                     rb.gravityScale = 0;
                     int hitIndex = UnityEngine.Random.Range(0, 3); // random number 0-6
                     MovementState mstate = MovementState.idle;
@@ -208,6 +219,9 @@ public class RobotStep : MonoBehaviour
                 if ((((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x))) || collidedWithPlayer) && !shocked && Grounded() && noHitWall)
                 {
                     eState = EnemyState.shocked;
+                    AudioClip[] clips = { sndAlert, sndAlert2, sndAlert3 };
+                    int index = UnityEngine.Random.Range(0, clips.Length);
+                    if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
                     MovementState mstate = MovementState.shocked;
                     anim.SetInteger("mstate", (int)mstate);
                     rb.velocity = new Vector2(0f, rb.velocity.y);
@@ -407,6 +421,46 @@ public class RobotStep : MonoBehaviour
                 hasPlayedStep2 = false;
             }
         }
+        else if (mstate == MovementState.sprinting)
+        {
+            if (normalizedTime >= 0.45f && normalizedTime <= 0.55f && !hasPlayedStep1)
+            {
+                audioSrc.PlayOneShot(sndStep);
+                hasPlayedStep1 = true;
+            }
+            else if (normalizedTime >= 0.90f && normalizedTime <= 1.00f && !hasPlayedStep2)
+            {
+                audioSrc.PlayOneShot(sndStep);
+                hasPlayedStep2 = true;
+            }
+
+            // Reset flags when the animation loops
+            if (normalizedTime < 0.05f)
+            {
+                hasPlayedStep1 = false;
+                hasPlayedStep2 = false;
+            }
+        }
+        else if (mstate == MovementState.backstep)
+        {
+            if (normalizedTime >= 0.60f && normalizedTime <= 0.68f && !hasPlayedStep1)
+            {
+                audioSrc.PlayOneShot(sndStep);
+                hasPlayedStep1 = true;
+            }
+            else if (normalizedTime >= 0.90f && normalizedTime <= 1.00f && !hasPlayedStep2)
+            {
+                audioSrc.PlayOneShot(sndStep);
+                hasPlayedStep2 = true;
+            }
+
+            // Reset flags when the animation loops
+            if (normalizedTime < 0.05f)
+            {
+                hasPlayedStep1 = false;
+                hasPlayedStep2 = false;
+            }
+        }
         else
         {
             // Reset if not running
@@ -462,7 +516,12 @@ public class RobotStep : MonoBehaviour
             MovementState mstate;
 
             if (player.uppercut)
+            {
                 mstate = MovementState.launched;
+                AudioClip[] clips2 = { sndStrongHit, sndStrongHit2, };
+                int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+            }
             else
             {
                 int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
@@ -471,11 +530,18 @@ public class RobotStep : MonoBehaviour
                     mstate = MovementState.hurt1;
                 else
                     mstate = MovementState.hurt2;
+
+                AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
+                int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
             }
 
             anim.SetInteger("mstate", (int)mstate);
             Vector2 hitPoint = transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
             player.SpawnHitEffect(hitPoint);
+            AudioClip[] clips = { sndHit, sndHit2, sndHit3 };
+            int index = UnityEngine.Random.Range(0, clips.Length);
+            if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
         }
     }
 

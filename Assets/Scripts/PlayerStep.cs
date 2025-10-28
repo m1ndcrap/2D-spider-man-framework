@@ -89,6 +89,19 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private AudioClip sndStep2;
     [SerializeField] private AudioClip sndCrawlStep;
     [SerializeField] private AudioClip sndCrawlStep2;
+    [SerializeField] private AudioClip sndAttack;
+    [SerializeField] private AudioClip sndAttack2;
+    [SerializeField] private AudioClip sndAttack3;
+    [SerializeField] private AudioClip sndSwipe;
+    [SerializeField] private AudioClip sndSwipe2;
+    [SerializeField] private AudioClip sndSwipe3;
+    [SerializeField] public AudioClip sndQuickHit;
+    [SerializeField] public AudioClip sndQuickHit2;
+    [SerializeField] public AudioClip sndStrongHit;
+    [SerializeField] public AudioClip sndStrongHit2;
+    [SerializeField] private AudioClip sndHurt;
+    [SerializeField] private AudioClip sndHurt2;
+    [SerializeField] private AudioClip sndHurt3;
     private bool wasGrounded = false;
 
     // Alarms
@@ -117,6 +130,7 @@ public class PlayerStep : MonoBehaviour
         coll = GetComponent<BoxCollider2D>();
         pState = PlayerState.normal;
         direction = 1;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     // Update is called once per frame
@@ -434,7 +448,21 @@ public class PlayerStep : MonoBehaviour
                     if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 2.5f) {dash_spd = 8f;}
                     if (Math.Abs(currentTarget.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 1.25f) {dash_spd = 4f;}
                     attacking = true;
-                    pState = PlayerState.dashenemy;
+
+                    if (pState != PlayerState.dashenemy)
+                    {
+                        AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                        int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                        if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                        AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                        int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                        if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
+
+                        pState = PlayerState.dashenemy;
+                    }
+
+                    //pState = PlayerState.dashenemy;
                     anim.speed = 2f;
                     MovementState mstate = MovementState.idle;
 
@@ -463,7 +491,18 @@ public class PlayerStep : MonoBehaviour
                 {
                     dash_spd = 0f;
                     attacking = false;
-                    pState = PlayerState.dashenemy;
+                    if (pState != PlayerState.dashenemy)
+                    {
+                        AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                        int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                        if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                        AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                        int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                        if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
+
+                        pState = PlayerState.dashenemy;
+                    }
                     anim.speed = 1.5f;
                     MovementState mstate = MovementState.idle;
 
@@ -500,6 +539,14 @@ public class PlayerStep : MonoBehaviour
                     attacking = true;
                     uppercut = true;
                     rb.gravityScale = 0;
+
+                    AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                    if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                    AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
                 }
                 else if (Input.GetKey(KeyCode.L) && (currentTarget == null || (currentTarget != null && Mathf.Abs(currentTarget.transform.position.x - origin.x) > 1f)) && Grounded())
                 {
@@ -510,6 +557,14 @@ public class PlayerStep : MonoBehaviour
                     anim.SetInteger("mstate", (int)mstate);
                     attacking = false;
                     uppercut = false;
+
+                    AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                    if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                    AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
                 }
 
                 if (Input.GetKey(KeyCode.P) && Grounded() && currentCounter != null)   // countering
@@ -522,6 +577,14 @@ public class PlayerStep : MonoBehaviour
                     countering = true;
                     currentCounter.anim.speed = 0f;
                     pState = PlayerState.dashenemy;
+
+                    AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                    if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                    AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
 
                     if (currentCounter.transform.position.x < transform.position.x)
                         sprite.flipX = true;
@@ -551,6 +614,14 @@ public class PlayerStep : MonoBehaviour
                     pState = PlayerState.dashenemy;
                     anim.speed = 1.5f;
                     MovementState mstate = MovementState.idle;
+
+                    AudioClip[] clips = { sndAttack, sndAttack2, sndAttack3 };
+                    int index = UnityEngine.Random.Range(0, clips.Length + 1); // +1 to include "no sound"
+                    if (index < clips.Length) {audioSrc.PlayOneShot(clips[index]);}
+                        
+                    AudioClip[] clips2 = { sndSwipe, sndSwipe2, sndSwipe3 };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) {audioSrc.PlayOneShot(clips2[index2]);}
 
                     int hitIndex = UnityEngine.Random.Range(0, 4);
 
@@ -902,6 +973,8 @@ public class PlayerStep : MonoBehaviour
 
             case PlayerState.dashenemy:
             {
+                if (attacking && currentTarget == null) { attacking = false; }
+
                 if (attacking)
                 {
                     currentTarget.rb.velocity = new Vector2(0f, currentTarget.rb.velocity.y);
@@ -971,6 +1044,14 @@ public class PlayerStep : MonoBehaviour
                     {
                         // combat
                         bool facingLeft = sprite.flipX;
+
+                        if (Input.GetAxisRaw("Horizontal") > 0)
+                            facingLeft = false;
+                        else if (Input.GetAxisRaw("Horizontal") < 0)
+                            facingLeft = true;
+                        else
+                            facingLeft = sprite.flipX;
+
                         Vector2 origin = transform.position;
 
                         // Get all enemies in a radius
@@ -1609,7 +1690,13 @@ public class PlayerStep : MonoBehaviour
             MovementState mstate;
 
             if (target.kick)
+            {
                 mstate = MovementState.launched;
+
+                AudioClip[] clips2 = { sndStrongHit, sndStrongHit2, };
+                int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+            }
             else
             {
                 int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
@@ -1618,6 +1705,10 @@ public class PlayerStep : MonoBehaviour
                     mstate = MovementState.hurt1;
                 else
                     mstate = MovementState.hurt2;
+
+                AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
+                int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
             }
 
             anim.SetInteger("mstate", (int)mstate);
@@ -1625,6 +1716,9 @@ public class PlayerStep : MonoBehaviour
             Vector2 hitPoint = target.transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
             enemyHitSpawn = currentTarget.transform.position;
             SpawnHurtEffect(hitPoint);
+            AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
+            int index = UnityEngine.Random.Range(0, clips.Length);
+            if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
         }
         else
         {

@@ -6235,7 +6235,7 @@ MonoBehaviour:
   m_ShowCameraFrustum: 1
   m_IgnoreTimeScale: 0
   m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 0
+  m_UpdateMethod: 1
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
@@ -7162,6 +7162,19 @@ MonoBehaviour:
   sndStep2: {fileID: 8300000, guid: ae84f09a263b9944e9a20961094c2285, type: 3}
   sndCrawlStep: {fileID: 8300000, guid: b0744b72c261cc242accac5fdc61f4d6, type: 3}
   sndCrawlStep2: {fileID: 8300000, guid: 4ebfbf77931d3614abb9e1f02b2a1375, type: 3}
+  sndAttack: {fileID: 8300000, guid: c8e4f80fad307bf4c90eca493151ac54, type: 3}
+  sndAttack2: {fileID: 8300000, guid: 24dee5501eca2ee4c9f00f4d7d0b50f8, type: 3}
+  sndAttack3: {fileID: 8300000, guid: 1e77797cb2d8f5641883a401a094430b, type: 3}
+  sndSwipe: {fileID: 8300000, guid: 2befe2b7534ce83468d4f987765056ab, type: 3}
+  sndSwipe2: {fileID: 8300000, guid: 9195bf581d82dc04bbf26e9464f8f8fc, type: 3}
+  sndSwipe3: {fileID: 8300000, guid: b7d7fdcb85d04694a86247798cf6da34, type: 3}
+  sndQuickHit: {fileID: 8300000, guid: c3edf36a44795f94bbd069f1b51679d3, type: 3}
+  sndQuickHit2: {fileID: 8300000, guid: 7b471a3da408f554382ce2f54e171d67, type: 3}
+  sndStrongHit: {fileID: 8300000, guid: 246c9a6ee4ea8514ab89f263566bb3f6, type: 3}
+  sndStrongHit2: {fileID: 8300000, guid: 8dfb489a18ed4a5468aa30e32f301eef, type: 3}
+  sndHurt: {fileID: 8300000, guid: fb4c4ab94cb8d3443b43f79aa6c76998, type: 3}
+  sndHurt2: {fileID: 8300000, guid: 291ca3f736acf9e489c953846c0a8656, type: 3}
+  sndHurt3: {fileID: 8300000, guid: 040f863de8164b240a80808ed2951107, type: 3}
   currentTarget: {fileID: 0}
   currentCounter: {fileID: 0}
   isEnemyAttacking: 0
