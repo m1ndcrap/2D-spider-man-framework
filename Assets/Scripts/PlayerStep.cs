@@ -17,7 +17,7 @@ using static UnityEngine.UI.Image;
 public class PlayerStep : MonoBehaviour
 {
     private Rigidbody2D rb;
-    [SerializeField] private Animator anim;
+    [SerializeField] public Animator anim;
     [SerializeField] public SpriteRenderer sprite;
     [SerializeField] private Transform visual;
     private BoxCollider2D coll;
@@ -85,6 +85,7 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private AudioClip sndWebTension;
     [SerializeField] private AudioClip sndWebTension2;
     [SerializeField] private AudioClip sndWebTension3;
+    [SerializeField] private AudioClip sndWebShoot;
     [SerializeField] private AudioClip sndStep;
     [SerializeField] private AudioClip sndStep2;
     [SerializeField] private AudioClip sndCrawlStep;
@@ -122,6 +123,9 @@ public class PlayerStep : MonoBehaviour
     public bool attacking = false; // boolean for if player is actually going to attack or only needs to play attack anim with no consequence
     public bool countering = false;
     [SerializeField] private bool pastHitEvent = false;
+    [SerializeField] private GameObject webPrefab;
+    [SerializeField] private GameObject sensePrefab;
+    private bool spiderSense = false;
 
     // Start is called before the first frame update
     void Start()
@@ -171,6 +175,16 @@ public class PlayerStep : MonoBehaviour
                 audioSrc.PlayOneShot(randomClip);
                 alarm1 = 400;
             }
+        }
+
+        if (currentCounter != null && !spiderSense)
+        {
+            Instantiate(sensePrefab, transform.position, Quaternion.Euler(0f, 0f, 0f));
+            spiderSense = true;
+        }
+        else if (currentCounter == null)
+        {
+            spiderSense = false;
         }
 
         switch (pState)
@@ -351,7 +365,52 @@ public class PlayerStep : MonoBehaviour
                 }
                 else
                 {
-                    shoot = false;
+                    if (shoot)
+                    {
+                        if (Input.GetKeyUp(KeyCode.U))
+                        {
+                            if (Input.GetAxisRaw("Horizontal") > 0 && Input.GetAxisRaw("Vertical") == 0)
+                            {
+                                Instantiate(webPrefab, transform.position, transform.rotation);
+                                audioSrc.PlayOneShot(sndWebShoot);
+                            }
+                            else if (Input.GetAxisRaw("Horizontal") > 0 && Input.GetAxisRaw("Vertical") > 0)
+                            {
+                                Instantiate(webPrefab, transform.position, transform.rotation * Quaternion.Euler(0f, 0f, 45f));
+                                audioSrc.PlayOneShot(sndWebShoot);
+                            }
+                            else if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") > 0)
+                            {
+                                Instantiate(webPrefab, transform.position, transform.rotation * Quaternion.Euler(0f, 0f, 90f));
+                                audioSrc.PlayOneShot(sndWebShoot);
+                            }
+                            else if (Input.GetAxisRaw("Horizontal") < 0 && Input.GetAxisRaw("Vertical") > 0)
+                            {
+                                Instantiate(webPrefab, transform.position, transform.rotation * Quaternion.Euler(0f, 0f, 135f));
+                                audioSrc.PlayOneShot(sndWebShoot);
+                            }
+                            else if (Input.GetAxisRaw("Horizontal") < 0 && Input.GetAxisRaw("Vertical") == 0)
+                            {
+                                Instantiate(webPrefab, transform.position, transform.rotation * Quaternion.Euler(0f, 0f, 180f));
+                                audioSrc.PlayOneShot(sndWebShoot);
+                            }
+                            else
+                            {
+                                if (sprite.flipX)
+                                {
+                                    Instantiate(webPrefab, transform.position, transform.rotation * Quaternion.Euler(0f, 0f, 180f));
+                                    audioSrc.PlayOneShot(sndWebShoot);
+                                }
+                                else
+                                {
+                                    Instantiate(webPrefab, transform.position, transform.rotation);
+                                    audioSrc.PlayOneShot(sndWebShoot);
+                                }
+                            }
+                        }
+
+                        shoot = false;
+                    }
                 }
 
                 if (!wasGrounded && Grounded() && pState == PlayerState.normal) // Landing Sound Code

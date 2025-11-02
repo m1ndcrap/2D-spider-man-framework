@@ -27,8 +27,8 @@ public class RobotStep : MonoBehaviour
     [SerializeField] public float hsp = 1f; // Horizontal speed
     [SerializeField] private int waitTime = 120;
 
-    private enum MovementState { idle, running, falling, hurt1, hurt2, launched, shocked, sprinting, alertidle, punch1, punch2, kick, backstep }
-    public enum EnemyState { normal, death, hurt, shocked, alert, attack }
+    public enum MovementState { idle, running, falling, hurt1, hurt2, launched, shocked, sprinting, alertidle, punch1, punch2, kick, backstep, webbed }
+    public enum EnemyState { normal, death, hurt, shocked, alert, attack, webbed }
     public EnemyState eState;
 
     // Sound Files
@@ -56,6 +56,7 @@ public class RobotStep : MonoBehaviour
     private int alarm2 = 0;
     [SerializeField] private int alarm3 = 0;
     [SerializeField] public int alarm4 = 0;
+    public int alarm5 = 0;
     private bool startAlarm1 = true;
     private bool startAlarm2 = false;
     [SerializeField] private float distanceFromPlayer = 0f;
@@ -127,7 +128,6 @@ public class RobotStep : MonoBehaviour
             }
         }
 
-
         if (startAlarm2)
         {
             if (alarm2 > 0)
@@ -150,12 +150,18 @@ public class RobotStep : MonoBehaviour
             alarm3 -= 1;
         else
         {
-            if (shocked && eState != EnemyState.attack)
+            if (shocked && eState != EnemyState.attack && eState != EnemyState.webbed)
             {
                 if ((distanceFromPlayer <= 4.5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                     alarm3 = 300;
                 else
                     shocked = false;
+            }
+            
+            if (eState == EnemyState.attack || eState == EnemyState.webbed)
+            {
+                shocked = true;
+                alarm3 = 3;
             }
         }
 
@@ -201,6 +207,16 @@ public class RobotStep : MonoBehaviour
                         case 2: { alarm4 = 500; } break;
                     }
                 }
+            }
+        }
+
+        if (alarm5 > 0)
+            alarm5 -= 1;
+        else
+        {
+            if (eState == EnemyState.webbed)
+            {
+                eState = EnemyState.alert;
             }
         }
 
@@ -353,6 +369,13 @@ public class RobotStep : MonoBehaviour
                 }
             }
             break;
+
+            case EnemyState.webbed:
+            {
+                rb.velocity = new Vector2(0f, 0f);
+                shocked = true;
+            }
+            break;
         }
 
         UpdateAnimationState();
@@ -369,6 +392,7 @@ public class RobotStep : MonoBehaviour
         }
 
         if (eState == EnemyState.hurt) return;
+        if (eState == EnemyState.webbed) return;
         if (eState == EnemyState.shocked) return;
         if (eState == EnemyState.attack) return;
         MovementState mstate = MovementState.idle;
