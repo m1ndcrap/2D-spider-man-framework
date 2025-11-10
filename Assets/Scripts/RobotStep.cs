@@ -101,7 +101,7 @@ public class RobotStep : MonoBehaviour
 
         collidedWithPlayer = Physics2D.Raycast(transform.position, transform.right * -dirX, 0.65f, playerMask);
 
-        if (eState == EnemyState.hurt || player.pState == PlayerStep.PlayerState.dashenemy || (player.transform.position.y - transform.position.y > 0.015f && Grounded()))
+        if (eState == EnemyState.hurt || player.pState == PlayerStep.PlayerState.dashenemy || eState == EnemyState.attack || (player.transform.position.y - transform.position.y > 0.015f && Grounded()))
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), true);
         else
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Player"), false);

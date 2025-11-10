@@ -103,6 +103,7 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private AudioClip sndHurt;
     [SerializeField] private AudioClip sndHurt2;
     [SerializeField] private AudioClip sndHurt3;
+    [SerializeField] private AudioClip sndSpiderSense;
     private bool wasGrounded = false;
 
     // Alarms
@@ -115,7 +116,7 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private LayerMask enemyMask;
     private float dash_spd = 0f;
     public UnityEvent<RobotStep> OnHit;
-    private bool waitingToHit = false;
+    [SerializeField] private bool waitingToHit = false;
     [SerializeField] private GameObject hitParticlePrefab; // Assign prefab in inspector
     [SerializeField] private GameObject hurtParticlePrefab; // Assign prefab in inspector
     public bool uppercut = false;
@@ -177,9 +178,41 @@ public class PlayerStep : MonoBehaviour
             }
         }
 
+        Vector2 origin = transform.position;
+        float closestEDistanceC = Mathf.Infinity;
+        RobotStep closestCounter = null;
+        Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+        foreach (var ehitC in ehitsC)
+        {
+            RobotStep enemyC = ehitC.GetComponent<RobotStep>();
+            if (enemyC == null || enemyC.eState == RobotStep.EnemyState.death)
+                continue;
+
+            if (enemyC.eState != RobotStep.EnemyState.attack)
+                continue;
+
+            // Linecast to check if anything blocks the path
+            RaycastHit2D hitC = Physics2D.Linecast(transform.position, enemyC.transform.position, jumpableGround);
+
+            if (hitC.collider != null)
+                if ((Vector2)hitC.point != (Vector2)enemyC.transform.position) continue;
+
+            float dxC = enemyC.transform.position.x - origin.x;
+
+            float distC = Mathf.Abs(dxC);
+            if (distC < closestEDistanceC)
+            {
+                closestEDistanceC = distC;
+                closestCounter = enemyC;
+            }
+        }
+
+        if (!countering) currentCounter = closestCounter;
+
         if (currentCounter != null && !spiderSense)
         {
             Instantiate(sensePrefab, transform.position, Quaternion.Euler(0f, 0f, 0f));
+            audioSrc.PlayOneShot(sndSpiderSense);
             spiderSense = true;
         }
         else if (currentCounter == null)
@@ -435,16 +468,15 @@ public class PlayerStep : MonoBehaviour
 
                 // combat
                 bool facingLeft = sprite.flipX;
-                Vector2 origin = transform.position;
 
                 // Get all enemies in a radius
                 Collider2D[] ehits = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
-                Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+                
 
                 float closestEDistance = Mathf.Infinity;
-                float closestEDistanceC = Mathf.Infinity;
+
                 RobotStep closestEnemy = null;
-                RobotStep closestCounter = null;
+                
 
                 foreach (var ehit in ehits)
                 {
@@ -472,37 +504,13 @@ public class PlayerStep : MonoBehaviour
                     }
                 }
 
-                foreach (var ehitC in ehitsC)
-                {
-                    RobotStep enemyC = ehitC.GetComponent<RobotStep>();
-                    if (enemyC == null || enemyC.eState == RobotStep.EnemyState.death)
-                        continue;
-
-                    if (enemyC.eState != RobotStep.EnemyState.attack)
-                        continue;
-
-                    // Linecast to check if anything blocks the path
-                    RaycastHit2D hitC = Physics2D.Linecast(transform.position, enemyC.transform.position, jumpableGround);
-
-                    if (hitC.collider != null)
-                        if ((Vector2)hitC.point != (Vector2)enemyC.transform.position) continue;
-
-                    float dxC = enemyC.transform.position.x - origin.x;
-
-                    float distC = Mathf.Abs(dxC);
-                    if (distC < closestEDistanceC)
-                    {
-                        closestEDistanceC = distC;
-                        closestCounter = enemyC;
-                    }
-                }
-
                 currentTarget = closestEnemy;
-                currentCounter = closestCounter;
+
+
 
                 if (Input.GetKey(KeyCode.O) && currentTarget != null)   // normal attack
                 {
-                    if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 5f) {dash_spd = 16f;}
+                    if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 3.75f) {dash_spd = 16f;}
                     if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 3.75f) {dash_spd = 12;}
                     if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 2.5f) {dash_spd = 8f;}
                     if (Math.Abs(currentTarget.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 1.25f) {dash_spd = 4f;}
@@ -628,7 +636,7 @@ public class PlayerStep : MonoBehaviour
 
                 if (Input.GetKey(KeyCode.P) && Grounded() && currentCounter != null)   // countering
                 {
-                    if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 5f) {dash_spd = 24f;}
+                    if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 3.75f) {dash_spd = 24f;}
                     if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 3.75f) {dash_spd = 18f;}
                     if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 2.5f) {dash_spd = 12f;}
                     if (Math.Abs(currentCounter.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 1.25f) {dash_spd = 6f;}
@@ -1111,16 +1119,16 @@ public class PlayerStep : MonoBehaviour
                         else
                             facingLeft = sprite.flipX;
 
-                        Vector2 origin = transform.position;
+                        //Vector2 origin = transform.position;
 
                         // Get all enemies in a radius
                         Collider2D[] ehits = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
-                        Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+                        //Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
 
                         float closestEDistance = Mathf.Infinity;
-                        float closestEDistanceC = Mathf.Infinity;
+                        //float closestEDistanceC = Mathf.Infinity;
                         RobotStep closestEnemy = null;
-                        RobotStep closestCounter = null;
+                        //RobotStep closestCounter = null;
 
                         foreach (var ehit in ehits)
                         {
@@ -1178,7 +1186,7 @@ public class PlayerStep : MonoBehaviour
 
                         if (Input.GetKey(KeyCode.O) && currentTarget != null)   // normal attack
                         {
-                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 5f) { dash_spd = 16f; }
+                            if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 3.75f) { dash_spd = 16f; }
                             if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 3.75f) { dash_spd = 12; }
                             if (Math.Abs(currentTarget.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 2.5f) { dash_spd = 8f; }
                             if (Math.Abs(currentTarget.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentTarget.transform.position.x - transform.position.x) <= 1.25f) { dash_spd = 4f; }
@@ -1269,7 +1277,7 @@ public class PlayerStep : MonoBehaviour
 
                         if (Input.GetKey(KeyCode.P) && Grounded() && currentCounter != null)   // countering
                         {
-                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 3.75f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 5f) { dash_spd = 24f; }
+                            if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 3.75f) { dash_spd = 24f; }
                             if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 2.5f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 3.75f) { dash_spd = 18f; }
                             if (Math.Abs(currentCounter.transform.position.x - transform.position.x) > 1.25f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 2.5f) { dash_spd = 12f; }
                             if (Math.Abs(currentCounter.transform.position.x - transform.position.x) >= 0f && Math.Abs(currentCounter.transform.position.x - transform.position.x) <= 1.25f) { dash_spd = 6f; }
