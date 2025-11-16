@@ -141,6 +141,7 @@ public class PlayerStep : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(1 / Time.unscaledDeltaTime);
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
 
         if (swingEnd && stateInfo.IsName("Player_Swing_End") && stateInfo.normalizedTime >= 1f)
@@ -1649,7 +1650,9 @@ public class PlayerStep : MonoBehaviour
 
     Vector2? FindClosestTileTopCorner(Vector2 playerPos)
     {
-        BoundsInt bounds = tilemap.cellBounds;
+        Camera cam = Camera.main;
+        BoundsInt bounds = GetCameraTileBounds(tilemap, cam);
+
         float closestDistance = float.MaxValue;
         Vector2 bestCorner = Vector2.zero;
         bool found = false;
@@ -1657,40 +1660,70 @@ public class PlayerStep : MonoBehaviour
         foreach (Vector3Int pos in bounds.allPositionsWithin)
         {
             if (!tilemap.HasTile(pos)) continue;
-            
-            // Check if there is a tile directly above
-            Vector3Int abovePos = pos + Vector3Int.up;
-            if (tilemap.HasTile(abovePos)) continue; // skip if blocked from above
+
+            // Tile must have no tile ABOVE it
+            if (tilemap.HasTile(pos + Vector3Int.up)) continue;
+
+            // Must NOT be a bottom corner; tile below must be solid
+            if (!tilemap.HasTile(pos + Vector3Int.down)) continue;
+
             Vector3 worldPos = tilemap.GetCellCenterWorld(pos);
-            Vector2 topLeft = worldPos + new Vector3(-0.5f, 0.5f);
-            Vector2 topRight = worldPos + new Vector3(0.5f, 0.5f);
-            List<Vector2> corners = new() { topLeft, topRight };
+            Vector3 half = tilemap.cellSize * 0.5f;
 
-            foreach (Vector2 corner in corners)
-            {
-                if (Vector2.Distance(corner, playerPos) > 6f) continue;
-                if (corner.y <= playerPos.y) continue;
-                if (!sprite.flipX && corner.x <= playerPos.x) continue;
-                if (sprite.flipX && corner.x >= playerPos.x) continue;
+            Vector2 topLeft = worldPos + new Vector3(-half.x, half.y);
+            Vector2 topRight = worldPos + new Vector3(half.x, half.y);
 
-                // Linecast to check if anything blocks the path
-                RaycastHit2D hit = Physics2D.Linecast(playerPos, corner, jumpableGround);
-
-                if (hit.collider != null)
-                    if ((Vector2)hit.point != corner) continue; // If the line hits something before reaching the corner, skip it
-
-                float dist = Vector2.Distance(playerPos, corner);
-
-                if (dist < closestDistance)
-                {
-                    closestDistance = dist;
-                    bestCorner = corner;
-                    found = true;
-                }
-            }
+            if (IsExposedCorner(topLeft, false)) { TryCorner(topLeft); }
+            if (IsExposedCorner(topRight, true)) { TryCorner(topRight); }
         }
 
         return found ? bestCorner : null;
+
+        void TryCorner(Vector2 corner)
+        {
+            // Distance + direction filtering
+            if (Vector2.Distance(corner, playerPos) > 6f) return;
+            if (corner.y <= playerPos.y) return;
+
+            if (!sprite.flipX && corner.x <= playerPos.x) return;
+            if (sprite.flipX && corner.x >= playerPos.x) return;
+
+            // Make sure path is not blocked
+            RaycastHit2D hit = Physics2D.Linecast(playerPos, corner, jumpableGround);
+
+            if (hit.collider != null && Vector2.Distance(hit.point, corner) > 0.02f)
+                return;
+
+            float dist = Vector2.Distance(playerPos, corner);
+
+            if (dist < closestDistance)
+            {
+                closestDistance = dist;
+                bestCorner = corner;
+                found = true;
+            }
+        }
+    }
+
+    bool IsExposedCorner(Vector2 corner, bool isRightCorner)
+    {
+        // Determine which side to check (if left corner -> check slightly left, if right corner -> check slightly right)
+        Vector2 dir = isRightCorner ? Vector2.right : Vector2.left;
+
+        // Check the space directly beside the corner. If empty, this is a corner the player can quickzip, or grapple, towards.
+        float sideOffset = tilemap.cellSize.x * 0.3f;
+        return Physics2D.OverlapPoint(corner + dir * sideOffset, jumpableGround) == null;
+
+    }
+    BoundsInt GetCameraTileBounds(Tilemap tilemap, Camera cam)
+    {
+        Vector3 min = cam.ViewportToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 max = cam.ViewportToWorldPoint(new Vector3(1, 1, 0));
+
+        Vector3Int cellMin = tilemap.WorldToCell(min);
+        Vector3Int cellMax = tilemap.WorldToCell(max);
+
+        return new BoundsInt(cellMin.x - 2, cellMin.y - 2, 0, (cellMax.x - cellMin.x) + 4, (cellMax.y - cellMin.y) + 4, 1);
     }
 
     public void HitEvent()

@@ -18,7 +18,7 @@ TagManager:
   - Enemy
   - Player
   - Bullets
-  - 
+  - Map
   - 
   - 
   - 
@@ -42,6 +42,15 @@ TagManager:
   m_SortingLayers:
   - name: background
     uniqueID: 1701936043
+    locked: 0
+  - name: sky
+    uniqueID: 235248441
+    locked: 0
+  - name: scrolling background
+    uniqueID: 1142356461
+    locked: 0
+  - name: map
+    uniqueID: 1773312329
     locked: 0
   - name: Default
     uniqueID: 0

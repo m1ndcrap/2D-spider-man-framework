@@ -20,8 +20,8 @@ public class RobotStep : MonoBehaviour
     [SerializeField] public SpriteRenderer sprite;
     private BoxCollider2D coll;
     private float lastspd = 0f;
-    private float dirX = 0f;
-
+    [SerializeField] private float dirX = 0f;
+    [SerializeField] private bool setCustomStartingDir = false;
     [SerializeField] private LayerMask jumpableGround;
     [SerializeField] private LayerMask playerMask;
     [SerializeField] public float hsp = 1f; // Horizontal speed
@@ -78,7 +78,7 @@ public class RobotStep : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         eState = EnemyState.normal;
-        dirX = UnityEngine.Random.Range(0, 2) == 0 ? 1 : -1;
+        if (!setCustomStartingDir) { dirX = UnityEngine.Random.Range(0, 2) == 0 ? 1 : -1; }
         alarm1 = waitTime;
         outline = sprite.material;
         player.OnHit.AddListener((x) => OnPlayerHit(x));
@@ -91,8 +91,13 @@ public class RobotStep : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOnScreen(Camera.main))
+        {
+            return;
+        }
+
         //Debug.Log(anim.speed);
-        Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * (player.transform.position - transform.position).normalized.magnitude, Color.red);
+        //Debug.DrawRay(transform.position, (player.transform.position - transform.position).normalized * (player.transform.position - transform.position).normalized.magnitude, Color.red);
 
         // Outline Shader Color Control
         if (eState == EnemyState.attack) { outline.color = Color.red; }
@@ -347,7 +352,7 @@ public class RobotStep : MonoBehaviour
                     float step = 4f * Time.deltaTime;
                     Vector2 targetPosition = new Vector2(player.transform.position.x, transform.position.y);
                     transform.position = Vector2.MoveTowards(transform.position, targetPosition, step);
-
+                    if (targetPosition.x < transform.position.x) { sprite.flipX = true; } else { sprite.flipX = false; }
                 }
 
                 if ((stateInfo.IsName("Enemy_Punch1") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Punch2") && stateInfo.normalizedTime >= 1f) || (stateInfo.IsName("Enemy_Kick") && stateInfo.normalizedTime >= 1f))
@@ -383,7 +388,7 @@ public class RobotStep : MonoBehaviour
 
     private void UpdateAnimationState()
     {
-        if (!(eState == EnemyState.alert && backstep))
+        if (!((eState == EnemyState.alert && backstep) || (eState == EnemyState.attack)))
         {
             if (dirX > 0f)
                 sprite.flipX = false;
@@ -574,4 +579,12 @@ public class RobotStep : MonoBehaviour
         Debug.Log(Vector3.Distance(player.transform.position, transform.position));
         if (Vector3.Distance(player.transform.position, transform.position) <= 0.45f) { player.Damage(this); }
     }
+    public bool IsOnScreen(Camera cam)
+    {
+        Vector3 viewportPos = cam.WorldToViewportPoint(transform.position);
+        return viewportPos.x > 0 && viewportPos.x < 1 &&
+               viewportPos.y > 0 && viewportPos.y < 1 &&
+               viewportPos.z > 0;
+    }
+
 }
