@@ -72,6 +72,11 @@ public class RobotStep : MonoBehaviour
     public bool collidedWithPlayer = false;
     private bool backstep = false;
 
+    // health bar
+    private int health = 100;
+    private int maxHealth = 100;
+    HealthBar healthbar;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -86,6 +91,8 @@ public class RobotStep : MonoBehaviour
         sndQuickHit2 = player.sndQuickHit2;
         sndStrongHit = player.sndStrongHit;
         sndStrongHit2 = player.sndStrongHit2;
+        healthbar = GetComponentInChildren<HealthBar>();
+        healthbar.UpdateHealthBar(health, maxHealth);
     }
 
     // Update is called once per frame
@@ -568,6 +575,8 @@ public class RobotStep : MonoBehaviour
             anim.SetInteger("mstate", (int)mstate);
             Vector2 hitPoint = transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
             player.SpawnHitEffect(hitPoint);
+            health -= 5;
+            healthbar.UpdateHealthBar(health, maxHealth);
             AudioClip[] clips = { sndHit, sndHit2, sndHit3 };
             int index = UnityEngine.Random.Range(0, clips.Length);
             if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }

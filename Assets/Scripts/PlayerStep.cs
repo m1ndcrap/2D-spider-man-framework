@@ -41,9 +41,9 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private Transform groundPositionChecker;
     [SerializeField] private Transform wallPositionChecker;
     [SerializeField] private Transform ceilingPositionChecker;
-    [SerializeField] private float groundCheckDistance;
-    [SerializeField] private float wallCheckDistance;
-    [SerializeField] private float ceilingCheckDistance;
+    private float groundCheckDistance = 0.1f;
+    private float wallCheckDistance = 0.1f;
+    private float ceilingCheckDistance = 0.1f;
     [SerializeField] private bool hasTurn;
     private float ZaxisAdd;
     [SerializeField] private int direction;
@@ -128,6 +128,12 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private GameObject sensePrefab;
     private bool spiderSense = false;
 
+    // health bar
+    private int health = 100;
+    private int maxHealth = 100;
+    [SerializeField] HealthBar healthbar;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -136,12 +142,13 @@ public class PlayerStep : MonoBehaviour
         pState = PlayerState.normal;
         direction = 1;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        healthbar.UpdateHealthBar(health, maxHealth);
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(1 / Time.unscaledDeltaTime);
+        Debug.Log(1 / Time.unscaledDeltaTime);  // FPS Counter
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
 
         if (swingEnd && stateInfo.IsName("Player_Swing_End") && stateInfo.normalizedTime >= 1f)
@@ -1816,6 +1823,8 @@ public class PlayerStep : MonoBehaviour
             Vector2 hitPoint = target.transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
             enemyHitSpawn = currentTarget.transform.position;
             SpawnHurtEffect(hitPoint);
+            health -= 5;
+            healthbar.UpdateHealthBar(health, maxHealth);
             AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
             int index = UnityEngine.Random.Range(0, clips.Length);
             if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
