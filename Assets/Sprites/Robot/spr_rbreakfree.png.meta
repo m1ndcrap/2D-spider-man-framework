@@ -1,0 +1,752 @@
+fileFormatVersion: 2
+guid: 0b3ae095f932790459d0fe4b7099d176
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: spr_rbreakfree_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 218d55f47b244144bbf3b6337de8ff52
+      internalID: -760332979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8c4d2f0040e57c41ada7506aba12f5c
+      internalID: 1670120581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3b73f4ce9524b84bb2a0b00a5d6ebbb
+      internalID: 664078407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9483f1d8b017b4459459856a0ba5c74
+      internalID: 898311154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 706f002325207bc409dfc897d505f3dd
+      internalID: 2096579196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dba3079fbb5f88418fb7031c9d9e0f0
+      internalID: -1637533364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df18426da9772f1488747c41a6efce44
+      internalID: -862327863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5838b416e46e3084c86d3344ac8bdde1
+      internalID: 2121990601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f386b4fe90a16df4ab7d25a3d03b0544
+      internalID: -5987035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afcd14e76d62b9b41861d6d84aaa0edc
+      internalID: 178954165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_10
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dccc99f6db3c8a34594479444d35d228
+      internalID: -1177614391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_11
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88a5866aebc4d944a85d1f20e0197b49
+      internalID: 815026634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_12
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40722dca4998ab541b4662932f85f8a1
+      internalID: 1863666735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_13
+      rect:
+        serializedVersion: 2
+        x: 1664
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07f706b25a1af834b8464f98bac969d5
+      internalID: 36979193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_14
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bf4d4b914ea7864bbcbbf0074b2ac53
+      internalID: -1210583735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_15
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 625edf5df697b6746877b6cb6130a97b
+      internalID: -640562279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_16
+      rect:
+        serializedVersion: 2
+        x: 2048
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edfdfd0554d5d084f904973cb4a0c542
+      internalID: 1402845843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_17
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a02831e82db33d548b30073343bfec3d
+      internalID: 45604540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_18
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 584b37527d232e541b20256f13e7a014
+      internalID: 1812042962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_19
+      rect:
+        serializedVersion: 2
+        x: 2432
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4df17646cb1bee14f819e7d0d73d5743
+      internalID: 1478606934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_20
+      rect:
+        serializedVersion: 2
+        x: 2560
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6bcb67596604f94d8d3758b1697eb7c
+      internalID: 356859240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_21
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe4e6ca566a37454b8292cc3a984006a
+      internalID: -766166504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_22
+      rect:
+        serializedVersion: 2
+        x: 2816
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 518245fbfe39eb34c862884c7da67b1e
+      internalID: -613968843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_23
+      rect:
+        serializedVersion: 2
+        x: 2944
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 783f201905ee1084283df616727b5753
+      internalID: -2010250866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_24
+      rect:
+        serializedVersion: 2
+        x: 3072
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a6f0925efa8d3b42aa701e0abd70b1f
+      internalID: 1799204068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_25
+      rect:
+        serializedVersion: 2
+        x: 3200
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5344672ddb85d99459f1af9c2d4185cb
+      internalID: 775651495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_26
+      rect:
+        serializedVersion: 2
+        x: 3328
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e63f371dfa166d6448ab1ab8e87d1f2a
+      internalID: -241327773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_27
+      rect:
+        serializedVersion: 2
+        x: 3456
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5691a24f0de086b4ca6cd1839ca3e0dd
+      internalID: -1340219884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_rbreakfree_28
+      rect:
+        serializedVersion: 2
+        x: 3584
+        y: 0
+        width: 128
+        height: 128
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4921875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b49fc38cd0712f49931b40db2a933c0
+      internalID: 1096206325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      spr_rbreakfree_0: -760332979
+      spr_rbreakfree_1: 1670120581
+      spr_rbreakfree_10: -1177614391
+      spr_rbreakfree_11: 815026634
+      spr_rbreakfree_12: 1863666735
+      spr_rbreakfree_13: 36979193
+      spr_rbreakfree_14: -1210583735
+      spr_rbreakfree_15: -640562279
+      spr_rbreakfree_16: 1402845843
+      spr_rbreakfree_17: 45604540
+      spr_rbreakfree_18: 1812042962
+      spr_rbreakfree_19: 1478606934
+      spr_rbreakfree_2: 664078407
+      spr_rbreakfree_20: 356859240
+      spr_rbreakfree_21: -766166504
+      spr_rbreakfree_22: -613968843
+      spr_rbreakfree_23: -2010250866
+      spr_rbreakfree_24: 1799204068
+      spr_rbreakfree_25: 775651495
+      spr_rbreakfree_26: -241327773
+      spr_rbreakfree_27: -1340219884
+      spr_rbreakfree_28: 1096206325
+      spr_rbreakfree_3: 898311154
+      spr_rbreakfree_4: 2096579196
+      spr_rbreakfree_5: -1637533364
+      spr_rbreakfree_6: -862327863
+      spr_rbreakfree_7: 2121990601
+      spr_rbreakfree_8: -5987035
+      spr_rbreakfree_9: 178954165
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

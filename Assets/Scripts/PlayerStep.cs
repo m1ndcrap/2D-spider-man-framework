@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.Serialization;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static Cinemachine.CinemachineTargetGroup;
 using static RobotStep;
@@ -65,8 +67,8 @@ public class PlayerStep : MonoBehaviour
     private Queue<GameObject> ropeSegmentPool = new Queue<GameObject>();
     private int maxPoolSize = 200; // Optional limit
 
-    private enum MovementState { idle, running, jumping, falling, swinging, endswing, crawling, zip, groundshoot, airshoot, crawlshoot, punch1, punch2, punch3, punch4, airkick, airpunch, kick1, kick2, uppercut, launched, hurt1, hurt2, block1, block2, block3, block4 }
-    public enum PlayerState { normal, swing, crawl, quickzip, dashenemy, hurt }
+    private enum MovementState { idle, running, jumping, falling, swinging, endswing, crawling, zip, groundshoot, airshoot, crawlshoot, punch1, punch2, punch3, punch4, airkick, airpunch, kick1, kick2, uppercut, launched, hurt1, hurt2, block1, block2, block3, block4, death }
+    public enum PlayerState { normal, swing, crawl, quickzip, dashenemy, hurt, death }
     public PlayerState pState;
 
     // Sound Files
@@ -104,10 +106,15 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private AudioClip sndHurt2;
     [SerializeField] private AudioClip sndHurt3;
     [SerializeField] private AudioClip sndSpiderSense;
+    [SerializeField] private AudioClip sndHealth;
+    [SerializeField] public AudioClip sndCarBreak;
     private bool wasGrounded = false;
 
     // Alarms
     private int alarm1 = 0;
+    private int alarm2 = 0; // death timer before game ends/restarts
+    private bool startAlarm2 = false;
+    public int alarm3 = 0;
 
     // combat
     public RobotStep currentTarget = null;
@@ -117,8 +124,8 @@ public class PlayerStep : MonoBehaviour
     private float dash_spd = 0f;
     public UnityEvent<RobotStep> OnHit;
     [SerializeField] private bool waitingToHit = false;
-    [SerializeField] private GameObject hitParticlePrefab; // Assign prefab in inspector
-    [SerializeField] private GameObject hurtParticlePrefab; // Assign prefab in inspector
+    [SerializeField] private GameObject hitParticlePrefab;
+    [SerializeField] private GameObject hurtParticlePrefab;
     public bool uppercut = false;
     public Vector3 enemyHitSpawn = new Vector3(0f, 0f, 0f);
     public bool attacking = false; // boolean for if player is actually going to attack or only needs to play attack anim with no consequence
@@ -127,12 +134,19 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private GameObject webPrefab;
     [SerializeField] private GameObject sensePrefab;
     private bool spiderSense = false;
+    public int combo = 0;
+    [SerializeField] private Text comboText;
 
     // health bar
     private int health = 100;
     private int maxHealth = 100;
     [SerializeField] HealthBar healthbar;
 
+    [SerializeField] private Material noOutlineMaterial;
+
+    // specialized vars for level objects
+    private float wireHitCooldown = 0f;
+    private bool wireWasActive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -186,28 +200,53 @@ public class PlayerStep : MonoBehaviour
             }
         }
 
+        if (startAlarm2)
+        {
+            if (alarm2 > 0)
+            {
+                alarm2 -= 1;
+            }
+            else
+            {
+                if (pState == PlayerState.death)
+                {
+                    #if UNITY_EDITOR
+                        EditorApplication.isPlaying = false;
+                    #else
+                        Application.Quit();
+                    #endif
+                }
+            }
+        }
+
+        if (alarm3 > 0)
+        {
+            alarm3 -= 1;
+        }
+        else
+        {
+            if (combo > 0)
+            {
+                combo = 0;
+            }
+        }
+
         Vector2 origin = transform.position;
         float closestEDistanceC = Mathf.Infinity;
         RobotStep closestCounter = null;
         Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
+
         foreach (var ehitC in ehitsC)
         {
             RobotStep enemyC = ehitC.GetComponent<RobotStep>();
-            if (enemyC == null || enemyC.eState == RobotStep.EnemyState.death)
-                continue;
-
-            if (enemyC.eState != RobotStep.EnemyState.attack)
-                continue;
-
-            // Linecast to check if anything blocks the path
+            if (enemyC == null || enemyC.eState == RobotStep.EnemyState.death) continue;
+            if (enemyC.eState != RobotStep.EnemyState.attack) continue;
             RaycastHit2D hitC = Physics2D.Linecast(transform.position, enemyC.transform.position, jumpableGround);
-
-            if (hitC.collider != null)
-                if ((Vector2)hitC.point != (Vector2)enemyC.transform.position) continue;
+            if (hitC.collider != null) { if ((Vector2)hitC.point != (Vector2)enemyC.transform.position) continue; }
 
             float dxC = enemyC.transform.position.x - origin.x;
-
             float distC = Mathf.Abs(dxC);
+
             if (distC < closestEDistanceC)
             {
                 closestEDistanceC = distC;
@@ -217,7 +256,7 @@ public class PlayerStep : MonoBehaviour
 
         if (!countering) currentCounter = closestCounter;
 
-        if (currentCounter != null && !spiderSense)
+        if (currentCounter != null && !spiderSense && pState != PlayerState.death)
         {
             Instantiate(sensePrefab, transform.position, Quaternion.Euler(0f, 0f, 0f));
             audioSrc.PlayOneShot(sndSpiderSense);
@@ -227,6 +266,16 @@ public class PlayerStep : MonoBehaviour
         {
             spiderSense = false;
         }
+
+        if (health <= 0)
+        {
+            pState = PlayerState.death;
+        }
+
+        if (health > maxHealth)
+            health = maxHealth;
+
+        if (combo == 0) comboText.text = ""; else comboText.text = "x" + combo;
 
         switch (pState)
         {
@@ -270,8 +319,6 @@ public class PlayerStep : MonoBehaviour
                         if (point.y <= playerPos.y) continue; // skip if below player
                         if (dirX > 0 && point.x <= playerPos.x) continue; // player facing right, point must be ahead
                         if (dirX < 0 && point.x >= playerPos.x) continue; // player facing left, point must be behind
-
-                        //Debug.DrawLine(playerPos, point, Color.green);
 
                         float dist = Vector2.Distance(playerPos, point);
 
@@ -365,8 +412,6 @@ public class PlayerStep : MonoBehaviour
                     float closestDistance = float.MaxValue;
                     Vector2 bestAttachPoint = Vector2.zero;
                     bool found = false;
-
-                    // Allowable angle threshold from the input direction (in degrees)
                     float angleThreshold = 45f;
 
                     foreach (Collider2D hit in hits)
@@ -408,7 +453,7 @@ public class PlayerStep : MonoBehaviour
                 {
                     if (shoot)
                     {
-                        if (Input.GetKeyUp(KeyCode.U))
+                        if (Input.GetKeyUp(KeyCode.U) && (anim.GetCurrentAnimatorStateInfo(0).IsName("Player_Ground_Shoot") || anim.GetCurrentAnimatorStateInfo(0).IsName("Player_Air_Shoot")))
                         {
                             if (Input.GetAxisRaw("Horizontal") > 0 && Input.GetAxisRaw("Vertical") == 0)
                             {
@@ -875,7 +920,7 @@ public class PlayerStep : MonoBehaviour
 
                 if (wallDetected && !hasTurn)
                 {
-                    if (crawlDir > 0) // (clockwise)
+                    if (crawlDir > 0) // clockwise
                     {
                         ZaxisAdd += 90;
                         switch (direction)
@@ -894,7 +939,7 @@ public class PlayerStep : MonoBehaviour
                                 break;
                         }
                     }
-                    else if (crawlDir < 0) // (counter-clockwise)
+                    else if (crawlDir < 0) // counter-clockwise
                     {
                         ZaxisAdd -= 90;
                         switch (direction)
@@ -969,10 +1014,8 @@ public class PlayerStep : MonoBehaviour
                         transform.rotation = Quaternion.Euler(0f, 0f, angle - 90);
                     }
 
-                    // Move with velocity
                     rb.velocity = zipDir * 4f;
 
-                    // Stop when close enough
                     if (Vector2.Distance(currentPos, target) < 0.25f)
                     {
                         rb.velocity = Vector2.zero;
@@ -1004,15 +1047,8 @@ public class PlayerStep : MonoBehaviour
                     Vector2 wallDir = new Vector2(dirOff, 0); // left or right
                     Vector2 ceilingDir = Vector2.up;
 
-                    // Raycast for wall
-                    bool nearWall = Physics2D.Raycast(new Vector2(transform.position.x + xOff, transform.position.y), wallDir, 0.5f, jumpableGround);
-                    // Raycast for ceiling
-                    bool nearCeiling = Physics2D.Raycast(new Vector2(transform.position.x + xOff, transform.position.y), ceilingDir, 0.5f, jumpableGround);
-
-                    // Debugging
-                    //Debug.Log(nearCeiling);
-                    //Debug.DrawRay(new Vector2(transform.position.x + xOff, transform.position.y), wallDir * 0.5f, Color.red);
-                    //Debug.DrawRay(new Vector2(transform.position.x + xOff, transform.position.y), ceilingDir * 0.5f, Color.blue);
+                    bool nearWall = Physics2D.Raycast(new Vector2(transform.position.x + xOff, transform.position.y), wallDir, 0.5f, jumpableGround);   // Raycast for wall
+                    bool nearCeiling = Physics2D.Raycast(new Vector2(transform.position.x + xOff, transform.position.y), ceilingDir, 0.5f, jumpableGround); // Raycast for ceiling
 
                     if (nearWall && dirOff > 0)
                     {
@@ -1127,16 +1163,11 @@ public class PlayerStep : MonoBehaviour
                         else
                             facingLeft = sprite.flipX;
 
-                        //Vector2 origin = transform.position;
-
                         // Get all enemies in a radius
                         Collider2D[] ehits = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
-                        //Collider2D[] ehitsC = Physics2D.OverlapCircleAll(origin, 5.2f, enemyMask);
 
                         float closestEDistance = Mathf.Infinity;
-                        //float closestEDistanceC = Mathf.Infinity;
                         RobotStep closestEnemy = null;
-                        //RobotStep closestCounter = null;
 
                         foreach (var ehit in ehits)
                         {
@@ -1510,6 +1541,11 @@ public class PlayerStep : MonoBehaviour
         {
             mstate = MovementState.zip;
         }
+        else if (pState == PlayerState.death)
+        {
+            anim.speed = 1f;
+            mstate = MovementState.death;
+        }
 
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         float normalizedTime = stateInfo.normalizedTime % 1f;
@@ -1530,6 +1566,26 @@ public class PlayerStep : MonoBehaviour
 
             if (normalizedTime >= 0.82f && normalizedTime <= 0.85f)
                 audioSrc.PlayOneShot(sndCrawlStep2);
+        }
+
+        if (mstate == MovementState.death)
+        {
+            if (normalizedTime >= 0.44f && normalizedTime <= 0.46f)
+            {
+                if (Grounded()) audioSrc.PlayOneShot(sndHardLand);
+
+                if (!startAlarm2)
+                {
+                    alarm2 = 240;
+                    startAlarm2 = true;
+                }
+            }
+
+            if (normalizedTime == 1f)
+            {
+                anim.speed = 0f;
+                normalizedTime = 1f;
+            }
         }
 
         anim.SetInteger("mstate", (int)mstate);
@@ -1735,8 +1791,8 @@ public class PlayerStep : MonoBehaviour
 
     public void HitEvent()
     {
-        if (attacking && ((Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentTarget); if (!pastHitEvent) { pastHitEvent = true; } }
-        if (countering && ((Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentCounter); }
+        if (attacking && ((Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentTarget.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentTarget); if (!pastHitEvent) { pastHitEvent = true; } combo += 1; alarm3 = 300; }
+        if (countering && ((Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.45f)) || (!Grounded() && (Vector3.Distance(currentCounter.transform.position, transform.position) <= 0.9f)))) { OnHit.Invoke(currentCounter); combo += 1; alarm3 = 300; }
     }
 
     public void PauseBeforeHit()
@@ -1772,66 +1828,168 @@ public class PlayerStep : MonoBehaviour
 
     public void Damage(RobotStep target)
     {
-        if (!countering)
+        if (pState != PlayerState.death)
         {
-            float dir = 0;
-
-            if (!target.sprite.flipX)
+            if (!countering)
             {
-                dir = 1f;
-                dirX = -1f;
-            }
-            else
-            {
-                dir = -1f;
-                dirX = 1f;
-            }
+                float dir = 0;
 
-            if (target.kick)
-                rb.velocity = new Vector2(dir, 5f);
-            else
-                rb.velocity = new Vector2(dir, 0f);
-
-            anim.speed = 1f;
-            pState = PlayerState.hurt;
-            MovementState mstate;
-
-            if (target.kick)
-            {
-                mstate = MovementState.launched;
-
-                AudioClip[] clips2 = { sndStrongHit, sndStrongHit2, };
-                int index2 = UnityEngine.Random.Range(0, clips2.Length);
-                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
-            }
-            else
-            {
-                int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
-
-                if (hitIndex == 0)
-                    mstate = MovementState.hurt1;
+                if (!target.sprite.flipX)
+                {
+                    dir = 1f;
+                    dirX = -1f;
+                }
                 else
-                    mstate = MovementState.hurt2;
+                {
+                    dir = -1f;
+                    dirX = 1f;
+                }
 
-                AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
-                int index2 = UnityEngine.Random.Range(0, clips2.Length);
-                if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+                if (target.kick)
+                    rb.velocity = new Vector2(dir, 5f);
+                else
+                    rb.velocity = new Vector2(dir, 0f);
+
+                anim.speed = 1f;
+                combo = 0;
+                pState = PlayerState.hurt;
+                MovementState mstate;
+
+                if (target.kick)
+                {
+                    mstate = MovementState.launched;
+
+                    AudioClip[] clips2 = { sndStrongHit, sndStrongHit2, };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+                }
+                else
+                {
+                    int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
+
+                    if (hitIndex == 0)
+                        mstate = MovementState.hurt1;
+                    else
+                        mstate = MovementState.hurt2;
+
+                    AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
+                    int index2 = UnityEngine.Random.Range(0, clips2.Length);
+                    if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+                }
+
+                anim.SetInteger("mstate", (int)mstate);
+
+                Vector2 hitPoint = target.transform.position;
+                enemyHitSpawn = currentTarget.transform.position;
+                SpawnHurtEffect(hitPoint);
+
+                if (health > 0)
+                {
+                    if (target.kick)
+                        health -= 5;
+                    else
+                        health -= 4;
+
+                    healthbar.UpdateHealthBar(health, maxHealth);
+                }
+
+                AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
+                int index = UnityEngine.Random.Range(0, clips.Length);
+                if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
             }
+            else
+            {
+                currentCounter.OnPlayerHit(currentCounter);
+            }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (pState != PlayerState.death && collision.gameObject.CompareTag("Health"))
+        {
+            health += 8;
+            healthbar.UpdateHealthBar(health, maxHealth);
+            audioSrc.PlayOneShot(sndHealth);
+            collision.GetComponent<Animator>().Play("HealthCollect");
+            collision.GetComponent<SpriteRenderer>().material = noOutlineMaterial;
+            Destroy(collision.gameObject, 0.1f);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Car"))
+        {
+            rb.WakeUp();
+
+            Animator carAnim = collision.GetComponent<Animator>();
+            bool carNormal = carAnim.GetCurrentAnimatorStateInfo(0).IsName("CarNormal");
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+            if (carNormal && pState == PlayerState.dashenemy && ((transform.position.x > collision.transform.position.x && sprite.flipX) || (transform.position.x < collision.transform.position.x && !sprite.flipX)) && ((stateInfo.IsName("Player_Air_Kick") && stateInfo.normalizedTime <= 0.86f) || (stateInfo.IsName("Player_Air_Punch") && stateInfo.normalizedTime <= 0.67f) || (stateInfo.IsName("Player_Kick1") && stateInfo.normalizedTime <= 0.65f) || (stateInfo.IsName("Player_Kick2") && stateInfo.normalizedTime <= 0.46f) || (stateInfo.IsName("Player_Punch1") && stateInfo.normalizedTime <= 0.52f) || (stateInfo.IsName("Player_Punch2") && stateInfo.normalizedTime <= 0.48f) || (stateInfo.IsName("Player_Punch3") && stateInfo.normalizedTime <= 0.25f) || (stateInfo.IsName("Player_Punch4") && stateInfo.normalizedTime <= 0.45f) || (stateInfo.IsName("Player_Uppercut") && stateInfo.normalizedTime <= 0.33f)))
+            {
+                rb.WakeUp();
+                rb.position = rb.position;
+                audioSrc.PlayOneShot(sndCarBreak);
+                collision.GetComponent<Animator>().Play("CarBreak");
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Wires"))
+        {
+            if (pState == PlayerState.death) return;
+
+            rb.WakeUp();
+
+            Animator wireAnim = collision.GetComponent<Animator>();
+            bool wireIsActive = wireAnim.GetCurrentAnimatorStateInfo(0).IsName("WiresActive");
+
+            if (wireIsActive && !wireWasActive)
+            {
+                wireHitCooldown = 0f;
+                rb.WakeUp();
+                rb.position = rb.position;
+            }
+
+            wireWasActive = wireIsActive;
+
+            if (!wireIsActive)
+            {
+                wireHitCooldown = 0f;
+                return;
+            }
+
+            if (wireHitCooldown > 0f)
+            {
+                wireHitCooldown -= Time.deltaTime;
+                return;
+            }
+
+            wireHitCooldown = 0.25f;
+
+            float dir = sprite.flipX ? 1 : -1;
+            rb.velocity = new Vector2(dir, 5f);
+            anim.speed = 1f;
+            combo = 0;
+
+            pState = PlayerState.hurt;
+            MovementState mstate = MovementState.launched;
+
+            AudioClip[] clips2 = { sndStrongHit, sndStrongHit2 };
+            audioSrc.PlayOneShot(clips2[UnityEngine.Random.Range(0, clips2.Length)]);
 
             anim.SetInteger("mstate", (int)mstate);
 
-            Vector2 hitPoint = target.transform.position + new Vector3(0f, 0f); // Offset to torso or desired point
-            enemyHitSpawn = currentTarget.transform.position;
+            Vector2 hitPoint = transform.position;
+            enemyHitSpawn = collision.transform.position;
             SpawnHurtEffect(hitPoint);
-            health -= 5;
+
+            health -= 8;
             healthbar.UpdateHealthBar(health, maxHealth);
+
             AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
-            int index = UnityEngine.Random.Range(0, clips.Length);
-            if (index < clips.Length) { audioSrc.PlayOneShot(clips[index]); }
-        }
-        else
-        {
-            currentCounter.OnPlayerHit(currentCounter);
+            audioSrc.PlayOneShot(clips[UnityEngine.Random.Range(0, clips.Length)]);
         }
     }
 }

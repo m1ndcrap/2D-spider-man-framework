@@ -13,10 +13,12 @@ public class ShootScript : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] private AudioSource audioSrc;
     [SerializeField] private AudioClip sndWebDestroy;
+    [SerializeField] private PlayerStep player;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        player = FindObjectOfType<PlayerStep>();
         Destroy(gameObject, lifeTime);
     }
 
@@ -27,7 +29,7 @@ public class ShootScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Ground"))
+        if (other.CompareTag("Ground") || other.CompareTag("CarSolid"))
         {
             audioSrc.PlayOneShot(sndWebDestroy);
             Destroy(gameObject);
@@ -37,9 +39,11 @@ public class ShootScript : MonoBehaviour
         {
             RobotStep enemy = other.GetComponent<RobotStep>();
             enemy.eState = RobotStep.EnemyState.webbed;
+            enemy.alarm7 = 30;
             enemy.anim.SetInteger("mstate", 13);
             enemy.alarm5 = 240;
             audioSrc.PlayOneShot(sndWebDestroy);
+            player.alarm3 = 300;
             Destroy(gameObject);
         }
     }

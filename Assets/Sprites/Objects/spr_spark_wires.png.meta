@@ -1,0 +1,642 @@
+fileFormatVersion: 2
+guid: d59e2b7e5bf3bc64a9d8649628bb45b8
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: spr_spark_wires_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1deb1ad14180f479119e01dccbc3e8
+      internalID: 1448451633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_1
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cea4a7a4f6ccd9448af26bd6426e48fe
+      internalID: 226751095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_2
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84d8a79921f01414c98632354b4dad2f
+      internalID: -1398805342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_3
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1b240bf25f205c43915b5f48607335c
+      internalID: 1959618777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_4
+      rect:
+        serializedVersion: 2
+        x: 1308
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f69822e669f47342b15241b7bf995b3
+      internalID: 1272489601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_5
+      rect:
+        serializedVersion: 2
+        x: 1635
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1b1496953e1be64cac37749d0c200c5
+      internalID: -430348430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_6
+      rect:
+        serializedVersion: 2
+        x: 1962
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3faf95ad655abf440b4602263c96d623
+      internalID: 1973395930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_7
+      rect:
+        serializedVersion: 2
+        x: 2289
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3d1704c2c16ff14a9bfa79da9a33e6e
+      internalID: 480733537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_8
+      rect:
+        serializedVersion: 2
+        x: 2616
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e4920c4ca9a7094a9a0fc213f6075f0
+      internalID: -254419341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_9
+      rect:
+        serializedVersion: 2
+        x: 2943
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfee5ffd06ec1fe478ecdaed1b8ec5f5
+      internalID: -222042674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_10
+      rect:
+        serializedVersion: 2
+        x: 3270
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa2a60eb3a830c24ca45539d45298ed2
+      internalID: -616455384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_11
+      rect:
+        serializedVersion: 2
+        x: 3597
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff6fba2e9f771e74fa29919d7b161122
+      internalID: 868582398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_12
+      rect:
+        serializedVersion: 2
+        x: 3924
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dfe96a78baf045438beb17377141445
+      internalID: -934938206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_13
+      rect:
+        serializedVersion: 2
+        x: 4251
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6acdf9f4f98097847af03840163dc673
+      internalID: 791248435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_14
+      rect:
+        serializedVersion: 2
+        x: 4578
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a63094d0ba69a3448bfc6b1be42e989
+      internalID: -1141320118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_15
+      rect:
+        serializedVersion: 2
+        x: 4905
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecd748ff5c25626449e6706829bfd836
+      internalID: -2059136459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_16
+      rect:
+        serializedVersion: 2
+        x: 5232
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eafcdf350f41e464e844fbc2fd8eec89
+      internalID: 348610111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_17
+      rect:
+        serializedVersion: 2
+        x: 5559
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97a192304af16c5428f1d32ac64a7b50
+      internalID: 1535631151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_18
+      rect:
+        serializedVersion: 2
+        x: 5886
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0507ab1708b28694eac119d0a1853e4c
+      internalID: 610250748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_19
+      rect:
+        serializedVersion: 2
+        x: 6213
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d46b7430ebee26e49b55d2f136a73fd3
+      internalID: -546385719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_20
+      rect:
+        serializedVersion: 2
+        x: 6540
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 191c3776e92812d4ba2abc0cb291bb08
+      internalID: 1904256247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_21
+      rect:
+        serializedVersion: 2
+        x: 6867
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3f38233987108b4dbce538d471660b8
+      internalID: -1004660745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_22
+      rect:
+        serializedVersion: 2
+        x: 7194
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29d2ebc83eb0d7640b8ff09440f7a100
+      internalID: -29379963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spr_spark_wires_23
+      rect:
+        serializedVersion: 2
+        x: 7521
+        y: 0
+        width: 327
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb36551f532b513418930697c916f841
+      internalID: -969877406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      spr_spark_wires_0: 1448451633
+      spr_spark_wires_1: 226751095
+      spr_spark_wires_10: -616455384
+      spr_spark_wires_11: 868582398
+      spr_spark_wires_12: -934938206
+      spr_spark_wires_13: 791248435
+      spr_spark_wires_14: -1141320118
+      spr_spark_wires_15: -2059136459
+      spr_spark_wires_16: 348610111
+      spr_spark_wires_17: 1535631151
+      spr_spark_wires_18: 610250748
+      spr_spark_wires_19: -546385719
+      spr_spark_wires_2: -1398805342
+      spr_spark_wires_20: 1904256247
+      spr_spark_wires_21: -1004660745
+      spr_spark_wires_22: -29379963
+      spr_spark_wires_23: -969877406
+      spr_spark_wires_3: 1959618777
+      spr_spark_wires_4: 1272489601
+      spr_spark_wires_5: -430348430
+      spr_spark_wires_6: 1973395930
+      spr_spark_wires_7: 480733537
+      spr_spark_wires_8: -254419341
+      spr_spark_wires_9: -222042674
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

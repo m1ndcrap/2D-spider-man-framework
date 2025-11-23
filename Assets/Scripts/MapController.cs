@@ -15,18 +15,18 @@ public class MapController : MonoBehaviour
 
     void Update()
     {
-        spriteRenderer.enabled = IsVisible(cam, spriteRenderer);
+        spriteRenderer.enabled = IsVisible(cam, spriteRenderer, 1.5f);
     }
 
-    bool IsVisible(Camera cam, SpriteRenderer sr)
+    bool IsVisible(Camera cam, SpriteRenderer sr, float factor)
     {
-        // Get the world-space bounding box of the sprite
         Bounds bounds = sr.bounds;
 
-        // Check if the bounds intersects the camera frustum
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
+        float extra = factor - 1f;
+        Vector3 expansion = bounds.size * extra;
+        bounds.Expand(expansion);
 
-        // If bounds do NOT intersect, it's completely off-screen
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
         return GeometryUtility.TestPlanesAABB(planes, bounds);
     }
 }

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Enemy
   - Ground
+  - Health
+  - Car
+  - Wires
+  - CarSolid
   layers:
   - Default
   - TransparentFX
@@ -19,8 +23,8 @@ TagManager:
   - Player
   - Bullets
   - Map
-  - 
-  - 
+  - Wires
+  - CarTrigger
   - 
   - 
   - 
