@@ -29,6 +29,7 @@ public class RobotStep : MonoBehaviour
     [SerializeField] private LayerMask playerMask;
     [SerializeField] public float hsp = 1f; // Horizontal speed
     [SerializeField] private int waitTime = 120;
+    private Camera cam;
 
     public enum MovementState { idle, running, falling, hurt1, hurt2, launched, shocked, sprinting, alertidle, punch1, punch2, kick, backstep, webbed, death, breakfree }
     public enum EnemyState { normal, death, hurt, shocked, alert, attack, webbed }
@@ -74,6 +75,7 @@ public class RobotStep : MonoBehaviour
     private Material outline;
     [SerializeField] private PlayerStep player;
     [SerializeField] private bool noHitWall;
+    private bool noHitHazard;
     [SerializeField] private bool shocked = false;
     public UnityEvent<PlayerStep> OnAttack;
     public bool kick = false;
@@ -91,6 +93,8 @@ public class RobotStep : MonoBehaviour
     // specialized vars for level objects
     private float wireHitCooldown = 0f;
     private bool wireWasActive = false;
+    private float lightningHitCooldown = 0f;
+    private bool lightningWasActive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -109,12 +113,13 @@ public class RobotStep : MonoBehaviour
         sndCarBreak = player.sndCarBreak;
         healthbar = GetComponentInChildren<HealthBar>();
         healthbar.UpdateHealthBar(health, maxHealth);
+        cam = Camera.main;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!IsOnScreenWithMargin(Camera.main, 1.75f))
+        if (!IsInsideExtendedView(3.5f))
         {
             return;
         }
@@ -137,6 +142,24 @@ public class RobotStep : MonoBehaviour
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         distanceFromPlayer = Vector3.Distance(player.transform.position, transform.position);
         noHitWall = !Physics2D.Raycast(transform.position, (player.transform.position - transform.position).normalized, distanceFromPlayer, jumpableGround);
+
+
+        Vector2 start = transform.position;
+        Vector2 end = player.transform.position;
+        RaycastHit2D[] hits = Physics2D.LinecastAll(start, end);
+        noHitHazard = true;
+        foreach (var hit in hits)
+        {
+            if (hit.collider != null)
+            {
+                LightningScript lightning = hit.collider.GetComponent<LightningScript>();
+                if (lightning != null && lightning.phase == 0)
+                {
+                    noHitHazard = false;
+                    break;
+                }
+            }
+        }
 
         if (startAlarm1)
         {
@@ -180,7 +203,7 @@ public class RobotStep : MonoBehaviour
         {
             if (shocked && eState != EnemyState.attack && eState != EnemyState.webbed)
             {
-                if ((distanceFromPlayer <= 4.5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
+                if ((distanceFromPlayer <= 3f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x)) && noHitWall)
                     alarm3 = 300;
                 else
                     shocked = false;
@@ -244,6 +267,7 @@ public class RobotStep : MonoBehaviour
         {
             if (eState == EnemyState.webbed && !breakingWeb)
             {
+                if (audioSrc.isPlaying && audioSrc.clip == sndWebbedStruggle) { audioSrc.Stop(); }
                 audioSrc.PlayOneShot(sndWebbedEscape);
                 anim.SetInteger("mstate", 15);
                 breakingWeb = true;
@@ -294,7 +318,7 @@ public class RobotStep : MonoBehaviour
             {
                 rb.velocity = new Vector2(dirX * hsp, rb.velocity.y);
 
-                if ((((Math.Abs(transform.position.x - player.transform.position.x) <= 5f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x))) || collidedWithPlayer) && !shocked && Grounded() && noHitWall)
+                if ((((Math.Abs(transform.position.x - player.transform.position.x) <= 3f) && ((!sprite.flipX && transform.position.x < player.transform.position.x) || (sprite.flipX && transform.position.x > player.transform.position.x))) || collidedWithPlayer) && !shocked && Grounded() && noHitWall && noHitHazard)
                 {
                     eState = EnemyState.shocked;
                     AudioClip[] clips = { sndAlert, sndAlert2, sndAlert3 };
@@ -749,7 +773,66 @@ public class RobotStep : MonoBehaviour
                 return;
             }
 
-            wireHitCooldown = 0.25f;
+            wireHitCooldown = 0.05f;
+
+            float dir = sprite.flipX ? 1 : -1;
+            rb.velocity = new Vector2(dir, 5f);
+            anim.speed = 1f;
+            eState = EnemyState.hurt;
+
+            int attackTime = UnityEngine.Random.Range(0, 3);
+
+            switch (attackTime)
+            {
+                case 0: { alarm4 = 300; } break;
+                case 1: { alarm4 = 400; } break;
+                case 2: { alarm4 = 500; } break;
+            }
+
+            MovementState mstate = MovementState.launched;
+
+            AudioClip[] clips2 = { sndStrongHit, sndStrongHit2 };
+            audioSrc.PlayOneShot(clips2[UnityEngine.Random.Range(0, clips2.Length)]);
+
+            anim.SetInteger("mstate", (int)mstate);
+
+            Vector2 hitPoint = transform.position;
+            SpawnObjectHitEffect(hitPoint, collision.gameObject);
+
+            health -= 8;
+            healthbar.UpdateHealthBar(health, maxHealth);
+        }
+
+        if (collision.gameObject.CompareTag("Lightning"))
+        {
+            rb.WakeUp();
+            if (eState == EnemyState.death) return;
+
+            Animator wireAnim = collision.GetComponent<Animator>();
+            bool wireIsActive = wireAnim.GetCurrentAnimatorStateInfo(0).IsName("LightningActive");
+
+            if (wireIsActive && !lightningWasActive)
+            {
+                lightningHitCooldown = 0f;
+                rb.WakeUp();
+                rb.position = rb.position;
+            }
+
+            lightningWasActive = wireIsActive;
+
+            if (!wireIsActive)
+            {
+                lightningHitCooldown = 0f;
+                return;
+            }
+
+            if (lightningHitCooldown > 0f)
+            {
+                lightningHitCooldown -= Time.deltaTime;
+                return;
+            }
+
+            lightningHitCooldown = 0.05f;
 
             float dir = sprite.flipX ? 1 : -1;
             rb.velocity = new Vector2(dir, 5f);
@@ -780,13 +863,27 @@ public class RobotStep : MonoBehaviour
         }
     }
 
-    bool IsOnScreenWithMargin(Camera cam, float factor = 1.5f)
+    bool IsInsideExtendedView(float extensionFactor)
     {
-        Vector3 viewPos = cam.WorldToViewportPoint(transform.position);
+        if (!cam) return false;
 
-        float min = 0f - (factor - 1f) / 2f;
-        float max = 1f + (factor - 1f) / 2f;
+        float camHeight = cam.orthographicSize * 2f;
+        float camWidth = camHeight * cam.aspect;
 
-        return (viewPos.x > min && viewPos.x < max && viewPos.y > min && viewPos.y < max && viewPos.z > 0);
+        float extWidth = camWidth * extensionFactor;
+        float extHeight = camHeight * extensionFactor;
+
+        Vector3 camPos = cam.transform.position;
+
+        float minX = camPos.x - extWidth / 2f;
+        float maxX = camPos.x + extWidth / 2f;
+        float minY = camPos.y - extHeight / 2f;
+        float maxY = camPos.y + extHeight / 2f;
+
+        Bounds b = sprite.bounds;
+
+        bool overlap = b.max.x >= minX && b.min.x <= maxX && b.max.y >= minY && b.min.y <= maxY;
+
+        return overlap;
     }
 }

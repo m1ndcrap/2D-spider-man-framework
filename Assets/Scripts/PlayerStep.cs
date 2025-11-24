@@ -147,6 +147,8 @@ public class PlayerStep : MonoBehaviour
     // specialized vars for level objects
     private float wireHitCooldown = 0f;
     private bool wireWasActive = false;
+    private float lightningHitCooldown = 0f;
+    private bool lightningWasActive = false;
 
     // Start is called before the first frame update
     void Start()
@@ -282,6 +284,16 @@ public class PlayerStep : MonoBehaviour
             case PlayerState.normal:
             {
                 visual.rotation = Quaternion.Euler(0, 0, 0);
+
+                bool movementKey = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow);
+                bool anyKey = Input.anyKey;
+                bool otherKeyPressed = anyKey && !movementKey;
+
+                if (!otherKeyPressed)
+                {
+                    coll.size = new Vector2(0.8397379f, 1.615343f);
+                    coll.offset = new Vector2(-0.03511286f, -0.03012538f);
+                }
 
                 dirX = Input.GetAxisRaw("Horizontal");   // If left arrow key is pressed, returns -1. If right arrow key is pressed, returns +1. Using GetAxisRaw instead of GetAxis to make player not feel like they are on ice.
                 dirY = -Input.GetAxisRaw("Vertical"); //key up returns -1, key down returns +1
@@ -542,6 +554,24 @@ public class PlayerStep : MonoBehaviour
 
                     if (hit.collider != null)
                         if ((Vector2)hit.point != (Vector2)enemy.transform.position) continue;
+
+                    Vector2 start = transform.position;
+                    Vector2 end = enemy.transform.position;
+                    RaycastHit2D[] hitsLightning = Physics2D.LinecastAll(start, end);
+                    bool noLightning = true;
+                    foreach (var hitLightning in hitsLightning)
+                    {
+                        if (hitLightning.collider != null)
+                        {
+                            LightningScript lightning = hitLightning.collider.GetComponent<LightningScript>();
+                            if (lightning != null && lightning.phase == 0)
+                            {
+                                noLightning = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!noLightning) continue;
 
                     float dx = enemy.transform.position.x - origin.x;
 
@@ -1180,6 +1210,24 @@ public class PlayerStep : MonoBehaviour
 
                             if (hit.collider != null)
                                 if ((Vector2)hit.point != (Vector2)enemy.transform.position) continue;
+
+                            Vector2 start = transform.position;
+                            Vector2 end = enemy.transform.position;
+                            RaycastHit2D[] hitsLightning = Physics2D.LinecastAll(start, end);
+                            bool noLightning = true;
+                            foreach (var hitLightning in hitsLightning)
+                            {
+                                if (hitLightning.collider != null)
+                                {
+                                    LightningScript lightning = hitLightning.collider.GetComponent<LightningScript>();
+                                    if (lightning != null && lightning.phase == 0)
+                                    {
+                                        noLightning = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!noLightning) continue;
 
                             float dx = enemy.transform.position.x - origin.x;
 
@@ -1936,6 +1984,32 @@ public class PlayerStep : MonoBehaviour
             }
         }
 
+        if (collision.gameObject.CompareTag("Switch"))
+        {
+            rb.WakeUp();
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+            if (collision.gameObject.GetComponent<SwitchScript>().phase == 0 && pState == PlayerState.dashenemy && ((stateInfo.IsName("Player_Air_Kick") && stateInfo.normalizedTime <= 0.86f) || (stateInfo.IsName("Player_Air_Punch") && stateInfo.normalizedTime <= 0.67f) || (stateInfo.IsName("Player_Kick1") && stateInfo.normalizedTime <= 0.65f) || (stateInfo.IsName("Player_Kick2") && stateInfo.normalizedTime <= 0.46f) || (stateInfo.IsName("Player_Punch1") && stateInfo.normalizedTime <= 0.52f) || (stateInfo.IsName("Player_Punch2") && stateInfo.normalizedTime <= 0.48f) || (stateInfo.IsName("Player_Punch3") && stateInfo.normalizedTime <= 0.25f) || (stateInfo.IsName("Player_Punch4") && stateInfo.normalizedTime <= 0.45f) || (stateInfo.IsName("Player_Uppercut") && stateInfo.normalizedTime <= 0.33f)))
+            {
+                rb.WakeUp();
+                rb.position = rb.position;
+                collision.gameObject.GetComponent<SwitchScript>().phase = 1;
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Generator"))
+        {
+            rb.WakeUp();
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+            if (collision.gameObject.GetComponent<GeneratorScript>().phase == 0 && pState == PlayerState.dashenemy && ((stateInfo.IsName("Player_Air_Kick") && stateInfo.normalizedTime <= 0.86f) || (stateInfo.IsName("Player_Air_Punch") && stateInfo.normalizedTime <= 0.67f) || (stateInfo.IsName("Player_Kick1") && stateInfo.normalizedTime <= 0.65f) || (stateInfo.IsName("Player_Kick2") && stateInfo.normalizedTime <= 0.46f) || (stateInfo.IsName("Player_Punch1") && stateInfo.normalizedTime <= 0.52f) || (stateInfo.IsName("Player_Punch2") && stateInfo.normalizedTime <= 0.48f) || (stateInfo.IsName("Player_Punch3") && stateInfo.normalizedTime <= 0.25f) || (stateInfo.IsName("Player_Punch4") && stateInfo.normalizedTime <= 0.45f) || (stateInfo.IsName("Player_Uppercut") && stateInfo.normalizedTime <= 0.33f)))
+            {
+                rb.WakeUp();
+                rb.position = rb.position;
+                collision.gameObject.GetComponent<GeneratorScript>().phase = 1;
+            }
+        }
+
         if (collision.gameObject.CompareTag("Wires"))
         {
             if (pState == PlayerState.death) return;
@@ -1966,10 +2040,66 @@ public class PlayerStep : MonoBehaviour
                 return;
             }
 
-            wireHitCooldown = 0.25f;
+            wireHitCooldown = 0.05f;
 
             float dir = sprite.flipX ? 1 : -1;
-            rb.velocity = new Vector2(dir, 5f);
+            rb.velocity = new Vector2(dir * 1.5f, 5f);
+            anim.speed = 1f;
+            combo = 0;
+
+            pState = PlayerState.hurt;
+            MovementState mstate = MovementState.launched;
+
+            AudioClip[] clips2 = { sndStrongHit, sndStrongHit2 };
+            audioSrc.PlayOneShot(clips2[UnityEngine.Random.Range(0, clips2.Length)]);
+
+            anim.SetInteger("mstate", (int)mstate);
+
+            Vector2 hitPoint = transform.position;
+            enemyHitSpawn = collision.transform.position;
+            SpawnHurtEffect(hitPoint);
+
+            health -= 8;
+            healthbar.UpdateHealthBar(health, maxHealth);
+
+            AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
+            audioSrc.PlayOneShot(clips[UnityEngine.Random.Range(0, clips.Length)]);
+        }
+
+        if (collision.gameObject.CompareTag("Lightning"))
+        {
+            if (pState == PlayerState.death) return;
+
+            rb.WakeUp();
+
+            Animator wireAnim = collision.GetComponent<Animator>();
+            bool wireIsActive = wireAnim.GetCurrentAnimatorStateInfo(0).IsName("LightningActive");
+
+            if (wireIsActive && !lightningWasActive)
+            {
+                lightningHitCooldown = 0f;
+                rb.WakeUp();
+                rb.position = rb.position;
+            }
+
+            lightningWasActive = wireIsActive;
+
+            if (!wireIsActive)
+            {
+                lightningHitCooldown = 0f;
+                return;
+            }
+
+            if (lightningHitCooldown > 0f)
+            {
+                lightningHitCooldown -= Time.deltaTime;
+                return;
+            }
+
+            lightningHitCooldown = 0.05f;
+
+            float dir = transform.position.x < collision.transform.position.x ? -1f : 1f;
+            rb.velocity = new Vector2(dir * 2f, 5f);
             anim.speed = 1f;
             combo = 0;
 

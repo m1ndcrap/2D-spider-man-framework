@@ -10,6 +10,9 @@ TagManager:
   - Car
   - Wires
   - CarSolid
+  - Lightning
+  - Switch
+  - Generator
   layers:
   - Default
   - TransparentFX
