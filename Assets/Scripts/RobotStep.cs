@@ -95,6 +95,7 @@ public class RobotStep : MonoBehaviour
     private bool wireWasActive = false;
     private float lightningHitCooldown = 0f;
     private bool lightningWasActive = false;
+    private float hitCooldown = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -822,7 +823,6 @@ public class RobotStep : MonoBehaviour
 
             if (!wireIsActive)
             {
-                lightningHitCooldown = 0f;
                 return;
             }
 
@@ -852,6 +852,47 @@ public class RobotStep : MonoBehaviour
 
             AudioClip[] clips2 = { sndStrongHit, sndStrongHit2 };
             audioSrc.PlayOneShot(clips2[UnityEngine.Random.Range(0, clips2.Length)]);
+
+            anim.SetInteger("mstate", (int)mstate);
+
+            Vector2 hitPoint = transform.position;
+            SpawnObjectHitEffect(hitPoint, collision.gameObject);
+
+            health -= 8;
+            healthbar.UpdateHealthBar(health, maxHealth);
+        }
+
+        if (collision.gameObject.CompareTag("OneHitHazard"))
+        {
+            if (eState == EnemyState.death) return;
+
+            rb.WakeUp();
+            rb.position = rb.position;
+
+            if (hitCooldown > 0f)
+            {
+                hitCooldown -= Time.deltaTime;
+                return;
+            }
+
+            hitCooldown = 0.15f;
+
+            float dir = sprite.flipX ? 1f : -1f;
+            rb.velocity = new Vector2(dir * 2f, 5f);
+            anim.speed = 1f;
+            eState = EnemyState.hurt;
+
+            MovementState mstate;
+            int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
+
+            if (hitIndex == 0)
+                mstate = MovementState.hurt1;
+            else
+                mstate = MovementState.hurt2;
+
+            AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
+            int index2 = UnityEngine.Random.Range(0, clips2.Length);
+            if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
 
             anim.SetInteger("mstate", (int)mstate);
 

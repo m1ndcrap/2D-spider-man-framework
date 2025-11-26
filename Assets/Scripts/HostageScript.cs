@@ -142,6 +142,17 @@ public class HostageScript : MonoBehaviour
                     }
                 }
             }
+
+            if (trigger.CompareTag("Door"))
+            {
+                if (phase == 0)
+                {
+                    if (trigger.GetComponent<BreakableDoor>().phase == 2)
+                    {
+                        phase = 1;
+                    }
+                }
+            }
         }
 
         if (phase == 1 && !rescued)

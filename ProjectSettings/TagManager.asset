@@ -13,6 +13,9 @@ TagManager:
   - Lightning
   - Switch
   - Generator
+  - OneHitHazard
+  - Door
+  - DoorSolid
   layers:
   - Default
   - TransparentFX

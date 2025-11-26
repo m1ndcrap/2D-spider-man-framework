@@ -138,7 +138,7 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private Text comboText;
 
     // health bar
-    private int health = 100;
+    [SerializeField] private int health = 100;
     private int maxHealth = 100;
     [SerializeField] HealthBar healthbar;
 
@@ -149,6 +149,7 @@ public class PlayerStep : MonoBehaviour
     private bool wireWasActive = false;
     private float lightningHitCooldown = 0f;
     private bool lightningWasActive = false;
+    private float hitCooldown = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -1984,6 +1985,19 @@ public class PlayerStep : MonoBehaviour
             }
         }
 
+        if (collision.gameObject.CompareTag("Door"))
+        {
+            rb.WakeUp();
+            AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+
+            if (collision.gameObject.GetComponent<BreakableDoor>().phase == 0 && pState == PlayerState.dashenemy && ((stateInfo.IsName("Player_Air_Kick") && stateInfo.normalizedTime <= 0.86f) || (stateInfo.IsName("Player_Air_Punch") && stateInfo.normalizedTime <= 0.67f) || (stateInfo.IsName("Player_Kick1") && stateInfo.normalizedTime <= 0.65f) || (stateInfo.IsName("Player_Kick2") && stateInfo.normalizedTime <= 0.46f) || (stateInfo.IsName("Player_Punch1") && stateInfo.normalizedTime <= 0.52f) || (stateInfo.IsName("Player_Punch2") && stateInfo.normalizedTime <= 0.48f) || (stateInfo.IsName("Player_Punch3") && stateInfo.normalizedTime <= 0.25f) || (stateInfo.IsName("Player_Punch4") && stateInfo.normalizedTime <= 0.45f) || (stateInfo.IsName("Player_Uppercut") && stateInfo.normalizedTime <= 0.33f)))
+            {
+                rb.WakeUp();
+                rb.position = rb.position;
+                collision.gameObject.GetComponent<BreakableDoor>().phase = 1;
+            }
+        }
+
         if (collision.gameObject.CompareTag("Switch"))
         {
             rb.WakeUp();
@@ -2086,7 +2100,6 @@ public class PlayerStep : MonoBehaviour
 
             if (!wireIsActive)
             {
-                lightningHitCooldown = 0f;
                 return;
             }
 
@@ -2096,9 +2109,56 @@ public class PlayerStep : MonoBehaviour
                 return;
             }
 
-            lightningHitCooldown = 0.05f;
+            lightningHitCooldown = 0.15f;
 
-            float dir = transform.position.x < collision.transform.position.x ? -1f : 1f;
+            float dir = sprite.flipX ? 1f : -1f;
+            rb.velocity = new Vector2(dir * 2f, 5f);
+            anim.speed = 1f;
+            combo = 0;
+
+            pState = PlayerState.hurt;
+
+            MovementState mstate;
+            int hitIndex = UnityEngine.Random.Range(0, 2); // 0 or 1
+
+            if (hitIndex == 0)
+                mstate = MovementState.hurt1;
+            else
+                mstate = MovementState.hurt2;
+
+            AudioClip[] clips2 = { sndQuickHit, sndQuickHit2 };
+            int index2 = UnityEngine.Random.Range(0, clips2.Length);
+            if (index2 < clips2.Length) { audioSrc.PlayOneShot(clips2[index2]); }
+
+            anim.SetInteger("mstate", (int)mstate);
+
+            Vector2 hitPoint = transform.position;
+            enemyHitSpawn = collision.transform.position;
+            SpawnHurtEffect(hitPoint);
+
+            health -= 8;
+            healthbar.UpdateHealthBar(health, maxHealth);
+
+            AudioClip[] clips = { sndHurt, sndHurt2, sndHurt3 };
+            audioSrc.PlayOneShot(clips[UnityEngine.Random.Range(0, clips.Length)]);
+        }
+
+        if (collision.gameObject.CompareTag("OneHitHazard"))
+        {
+            if (pState == PlayerState.death) return;
+
+            rb.WakeUp();
+            rb.position = rb.position;
+
+            if (hitCooldown > 0f)
+            {
+                hitCooldown -= Time.deltaTime;
+                return;
+            }
+
+            hitCooldown = 0.15f;
+
+            float dir = sprite.flipX ? 1f : -1f;
             rb.velocity = new Vector2(dir * 2f, 5f);
             anim.speed = 1f;
             combo = 0;
