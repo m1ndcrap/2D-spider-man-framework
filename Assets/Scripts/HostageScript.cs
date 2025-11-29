@@ -10,7 +10,7 @@ public class HostageScript : MonoBehaviour
     private string civScaredAnim = "Civ1_Scared";
     private string civThanksAnim = "Civ1_Thanks1";
     [SerializeField] GameObject trigger;
-    private int phase = 0;
+    public int phase = 0;
     private bool rescued = false;
     private int alarm1 = 0;
     private int alarm2 = 300;
@@ -177,7 +177,7 @@ public class HostageScript : MonoBehaviour
                 c.a = 0f;
                 sr.color = c;
                 fading = false;
-                gameObject.SetActive(false);
+                Destroy(gameObject); // gameObject.SetActive(false);
             }
         }
     }

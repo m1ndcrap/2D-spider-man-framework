@@ -16,6 +16,7 @@ TagManager:
   - OneHitHazard
   - Door
   - DoorSolid
+  - Trigger
   layers:
   - Default
   - TransparentFX

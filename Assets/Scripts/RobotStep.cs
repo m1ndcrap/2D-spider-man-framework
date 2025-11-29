@@ -86,8 +86,8 @@ public class RobotStep : MonoBehaviour
     [SerializeField] private GameObject hitParticlePrefab;
 
     // health bar
-    private int health = 75;
-    private int maxHealth = 75;
+    private int health = 55;
+    private int maxHealth = 55;
     HealthBar healthbar;
 
     // specialized vars for level objects

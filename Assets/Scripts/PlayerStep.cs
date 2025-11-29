@@ -108,6 +108,7 @@ public class PlayerStep : MonoBehaviour
     [SerializeField] private AudioClip sndSpiderSense;
     [SerializeField] private AudioClip sndHealth;
     [SerializeField] public AudioClip sndCarBreak;
+    [SerializeField] public AudioClip sndWarning;
     private bool wasGrounded = false;
 
     // Alarms
@@ -1963,6 +1964,20 @@ public class PlayerStep : MonoBehaviour
             collision.GetComponent<Animator>().Play("HealthCollect");
             collision.GetComponent<SpriteRenderer>().material = noOutlineMaterial;
             Destroy(collision.gameObject, 0.1f);
+        }
+
+        if (collision.gameObject.CompareTag("Trigger"))
+        {
+            if (collision.gameObject.GetComponent<ObjectiveTrigger>().missionType == 1 && collision.gameObject.GetComponent<ObjectiveTrigger>().missionObjective.GetComponent<HostageScript>().phase == 0 && !collision.gameObject.GetComponent<ObjectiveTrigger>().active)
+            {
+                collision.gameObject.GetComponent<ObjectiveTrigger>().countdown = true;
+                collision.gameObject.GetComponent<ObjectiveTrigger>().active = true;
+                collision.gameObject.GetComponent<ObjectiveTrigger>().start = true;
+                Instantiate(sensePrefab, transform.position, Quaternion.Euler(0f, 0f, 0f));
+                audioSrc.PlayOneShot(sndSpiderSense);
+                spiderSense = true;
+                audioSrc.PlayOneShot(sndWarning);
+            }
         }
     }
 
